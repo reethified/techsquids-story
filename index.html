@@ -63,7 +63,7 @@
                             <td>
                                 <div id="ttText" style="opacity: 0; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
 
-                                    <p style="color: cornflowerblue; font-size: small;">Explore Clients/country by mouseover and click on bubbles</p>
+                                    <p style="color:black; font-size: 15px;">[ Explore Clients/country by mouseover and drag bubbles ]</p>
 
                                 </div>
                             </td>
@@ -108,7 +108,7 @@
         var continents = ["Africa", "Oceania", "Asia", "Europe", "Americas"];
 
         var size = d3.scaleLinear()
-            .domain([1011, 8459332])
+            .domain([11, 246000])
             .range([7, 55]);
 
 
@@ -174,9 +174,9 @@
             // Features of the forces applied to the nodes:
             var simulation = d3.forceSimulation()
                 .force("center", d3.forceCenter().x((width / 2)).y(height / 2))
-                .force("charge", d3.forceManyBody().strength(.4))
-                .force("collide", d3.forceCollide().strength(.4).radius(function(d) {
-                    return (size(d.value) + 3)
+                .force("charge", d3.forceManyBody().strength(.3))
+                .force("collide", d3.forceCollide().strength(.3).radius(function(d) {
+                    return (size(d.value) + 2)
                 }).iterations(1)) // Force that avoids circle overlapping
 
             // Apply these forces to the nodes and update their positions.
@@ -270,31 +270,26 @@
 
         var datasetBarChart = [{
             "region": "Africa",
-            "value": 59979,
-            "year": 1990
-        }, {
-            "region": "Oceania",
-            "value": 1134890,
-            "year": 1998
-        }, {
-            "region": "Asia",
-            "value": 3659432,
-            "year": 1987
+            "value": 5893
         }, {
             "region": "Europe",
-            "value": 7344447,
-            "year": 1994
+            "value": 73446
+        }, {
+            "region": "Oceania",
+            "value": 113489
+        }, {
+            "region": "Asia",
+            "value": 265937
         }, {
             "region": "Americas",
-            "value": 9650773,
-            "year": 1980
+            "value": 465073
         }];
 
         xBar.domain(datasetBarChart.map(d => {
             return d.region;
         }));
         // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
-        yBar.domain([10000, 9650773]);
+        yBar.domain([0, 600000]);
 
         svgBar.append("g")
             .attr("class", "x axis")
@@ -317,6 +312,7 @@
             .attr("x", d => {
                 return xBar(d.region);
             })
+            .style("opacity", "0.8")
             .attr("width", xBar.bandwidth())
             .attr("y", d => {
                 return marginRegionHight;
@@ -471,6 +467,82 @@
         });
     </script>
 
+
+    <script>
+        const dividedLine = (parameters, points, searchIterations) => {
+            let currentParameters = parameters(points[0], 0)
+            let currentPointsArray = []
+            let dividedLinesData = [{
+                key: currentParameters,
+                points: currentPointsArray
+            }]
+            points.forEach((point, pointI) => {
+
+                const newParameters = parameters(point, pointI)
+                let matchingParams = newParameters === currentParameters;
+
+                if (typeof currentParameters === "object") {
+                    matchingParams = JSON.stringify(newParameters) === JSON.stringify(currentParameters)
+                }
+
+                if (matchingParams) {
+                    currentPointsArray.push(point)
+                } else {
+                    const lastPoint = currentPointsArray[currentPointsArray.length - 1];
+                    let pointA = lastPoint;
+                    let pointB = point;
+
+                    for (let x = 0; x < searchIterations; x++) {
+                        const keys = Object.keys(pointA)
+                        const findPoints = simpleSearchFunction(pointA, pointB, currentParameters, parameters, keys)
+                        pointA = findPoints[0]
+                        pointB = findPoints[1]
+                    }
+                    currentPointsArray.push(pointB)
+                    currentPointsArray = [pointB, point]
+                    dividedLinesData.push({
+                        key: newParameters,
+                        points: currentPointsArray
+                    })
+                    currentParameters = newParameters
+                }
+            })
+            return dividedLinesData
+        }
+
+        function simpleSearchFunction(pointA, pointB, current, parameters, keys) {
+            const betweenPoint = {};
+            keys.forEach(key => {
+                betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
+            })
+
+            if (JSON.stringify(parameters(betweenPoint)) === JSON.stringify(current)) {
+                return [betweenPoint, pointB]
+            }
+            return [pointA, betweenPoint]
+        }
+
+        function parameters(point) {
+            const steve = new Date("7/9/1997")
+            if (new Date(point.Date) < steve) {
+                return "before"
+            }
+            if (point.Close > 100) {
+                return "top"
+            }
+            return "normal"
+        }
+
+        var styleMap = {
+            before: {
+                "stroke-dasharray": '1, 2'
+            },
+            top: {
+                "stroke": "#00BFA5"
+            },
+            normal: {}
+        }
+    </script>
 </body>
 
 </html>

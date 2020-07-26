@@ -87,6 +87,7 @@
     </svg>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/1.12.1/d3-annotation.min.js"></script>
+    <script src="./assets/divided-line.js"></script>
     <script>
         const width = 960
         const height = 500
@@ -98,11 +99,11 @@
         }
 
         const x = d3.scaleTime().range([margin.left, width - margin.right])
-            .domain([new Date('1/1/980'), new Date('1/1/2020')])
+            .domain([new Date('01/01/1981'), new Date('1/1/2020')])
         const y = d3.scaleLinear().range([height - margin.bottom, margin.top])
-            .domain([0, 170])
+            .domain([4731, 260457])
 
-        d3.csv("./data/acct_count.csv", function(error, json) {
+        d3.csv("assets/data/acct_count-1.csv", function(error, json) {
             if (error) throw error;
 
             var line = d3.line()
@@ -137,9 +138,7 @@
                     }, this)
                 })
 
-            const yAxis = d3.axisLeft(y).ticks(3).tickFormat(function(d) {
-                return "$" + d
-            })
+            const yAxis = d3.axisLeft(y).ticks(3).tickFormat(d3.format(".1s"))
             const xAxis = d3.axisBottom(x)
             svg.append("g")
                 .attr("class", "axis y")
@@ -153,7 +152,7 @@
             /* Code below relevant for annotations */
             const annotations = [{
                     note: {
-                        label: "Steve Jobs Returns"
+                        label: "Europe Launch"
                     },
                     subject: {
                         y1: margin.top,
@@ -161,11 +160,11 @@
                     },
                     y: margin.top,
                     data: {
-                        x: "7/9/1997"
+                        x: "04/01/1989"
                     } //position the x based on an x scale
                 }, {
                     note: {
-                        label: "iMac Release"
+                        label: "Asia Launch"
                     },
                     subject: {
                         y1: margin.top,
@@ -173,11 +172,11 @@
                     },
                     y: margin.top,
                     data: {
-                        x: "8/15/1998"
+                        x: "11/01/1998"
                     }
                 }, {
                     note: {
-                        label: "iPod Release"
+                        label: "Oceania Launch"
                     },
                     subject: {
                         y1: margin.top,
@@ -185,11 +184,23 @@
                     },
                     y: margin.top,
                     data: {
-                        x: "10/23/2001"
+                        x: "10/23/2011"
                     }
                 }, {
                     note: {
-                        label: "Stock Split 2:1",
+                        label: "Africa Launch"
+                    },
+                    subject: {
+                        y1: margin.top,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top,
+                    data: {
+                        x: "10/23/2015"
+                    }
+                }, {
+                    note: {
+                        label: "Recession",
                         lineType: "none",
                         orientation: "leftRight",
                         "align": "middle"
@@ -200,33 +211,29 @@
                         radius: 35
                     },
                     data: {
-                        x: "6/21/2000",
-                        y: 76
+                        x: "6/21/2007",
+                        y: 61000
                     },
                     dx: 40
                 }, {
                     note: {
-                        label: "Above $100",
+                        label: "0.2M clients",
                         wrap: 100,
                     },
                     className: "above",
                     disable: ["connector"],
                     subject: {
-                        x1: x(new Date('10/1/1999')),
-                        x2: x(new Date('8/1/2000'))
+                        x1: x(new Date('02/1/2013')),
+                        x2: x(new Date('8/1/2014'))
                     },
-                    x: x(new Date('10/1/1999')),
-                    dx: -30,
+                    x: x(new Date('10/1/2014')),
+                    dx: 50,
                     data: {
-                        y: 100
+                        y: 200000
                     }
                 }
 
             ]
-
-            //An example of taking the XYThreshold and merging it 
-            //with custom settings so you don't have to 
-            //repeat yourself in the annotations Objects
             const type = d3.annotationCustomType(
                 d3.annotationXYThreshold, {
                     "note": {
@@ -239,7 +246,6 @@
 
             const makeAnnotations = d3.annotation()
                 .type(type)
-                //Gives you access to any data objects in the annotations array
                 .accessors({
                     x: function(d) {
                         return x(new Date(d.x))
@@ -249,7 +255,7 @@
                     }
                 })
                 .annotations(annotations)
-                .textWrap(30)
+                .textWrap(20)
 
             d3.select("svg")
                 .append("g")
@@ -257,86 +263,6 @@
                 .call(makeAnnotations)
 
         });
-    </script>
-
-    <script>
-        //----Divided line code  ----
-        //https://bl.ocks.org/emeeks/03396c05b39b8198685f3e46942c87e3
-        const dividedLine = (parameters, points, searchIterations) => {
-            let currentParameters = parameters(points[0], 0)
-            let currentPointsArray = []
-            let dividedLinesData = [{
-                key: currentParameters,
-                points: currentPointsArray
-            }]
-            points.forEach((point, pointI) => {
-
-                const newParameters = parameters(point, pointI)
-                let matchingParams = newParameters === currentParameters;
-
-                if (typeof currentParameters === "object") {
-                    matchingParams = JSON.stringify(newParameters) === JSON.stringify(currentParameters)
-                }
-
-                if (matchingParams) {
-                    currentPointsArray.push(point)
-                } else {
-                    const lastPoint = currentPointsArray[currentPointsArray.length - 1];
-                    let pointA = lastPoint;
-                    let pointB = point;
-
-                    for (let x = 0; x < searchIterations; x++) {
-                        const keys = Object.keys(pointA)
-                        const findPoints = simpleSearchFunction(pointA, pointB, currentParameters, parameters, keys)
-                        pointA = findPoints[0]
-                        pointB = findPoints[1]
-                    }
-                    currentPointsArray.push(pointB)
-                    currentPointsArray = [pointB, point]
-                    dividedLinesData.push({
-                        key: newParameters,
-                        points: currentPointsArray
-                    })
-                    currentParameters = newParameters
-                }
-            })
-            return dividedLinesData
-        }
-
-        function simpleSearchFunction(pointA, pointB, current, parameters, keys) {
-            const betweenPoint = {};
-            keys.forEach(key => {
-                betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
-            })
-
-            if (JSON.stringify(parameters(betweenPoint)) === JSON.stringify(current)) {
-                return [betweenPoint, pointB]
-            }
-            return [pointA, betweenPoint]
-        }
-
-        function parameters(point) {
-            const steve = new Date("7/9/1997")
-            if (new Date(point.Date) < steve) {
-                return "before"
-            }
-            if (point.Close > 100) {
-                return "top"
-            }
-            return "normal"
-        }
-
-        var styleMap = {
-            before: {
-                "stroke-dasharray": '1, 2'
-            },
-            top: {
-                "stroke": "#00BFA5"
-            },
-            normal: {}
-        }
-
-        //----Finish divided line----
     </script>
 </body>
 
