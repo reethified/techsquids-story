@@ -16,60 +16,66 @@
     <div class="divMain">
         <div>
             <center>
-                <h1>Diary of Techsquids Journey</h1>
-            </center>
-        </div>
+                <h1 class="h1Top">Diary of Techsquids Journey</h1>
+
+                <img src="./assets/overview.svg" /></div>
+        </center>
         <div class="tabs">
             <div role="tablist" aria-label="Entertainment">
                 <button role="tab" aria-selected="true" aria-controls="nils-tab" id="nils">
-      Region
+      1
     </button>
                 <button role="tab" aria-selected="false" aria-controls="agnes-tab" id="agnes" tabindex="-1">
-      Agnes Obel
+      2
     </button>
                 <button role="tab" aria-selected="false" aria-controls="complexcomplex" id="complex" tabindex="-1" data-deletable="">
-      Joke
+      3
     </button>
             </div>
+
             <div tabindex="0" role="tabpanel" id="nils-tab" aria-labelledby="nils">
 
-                <h2>Techsquids Presence</h2>
+                <center>
+                    <h4>Region and country wise clients</h4>
+                </center>
                 <!-- Create a div where the graph will take place -->
                 <table>
-                    <colgroup>
-                        <col style="width: 90%;" />
-                        <col style="width: 10%;" />
-                    </colgroup>
                     <tbody>
                         <tr>
-                            <td colspan="2">
-                                <div id="frontSlideCountryGraph"></div>
+                            <td style="width: 30%;">
+                                <div id="regionsGraphDiv" style="width: 100%;"></div>
+
                             </td>
+                            <td>
+                                <div id="countryBubbleGraphDiv"></div>
+                            </td>
+
                         </tr>
                         <tr>
-                            <td>
-                                <td>
+                            <td style="width:70%;">
 
-                                    <div style="height: 20px; ">
-                                        <svg id="continentsSvg" width="600px">
-                      <g id="wrapper" transform="translate(0, 15)"></g>
-                    </svg>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div id="ttText" style="opacity: 0; font-size: 15px; background-color: white; width: 200px; padding: 1px; left: 1px; top: 217px;" class="tooltip">
-                                    </div>
-                                </td>
-
-
-
+                                <div style="height: 20px; ">
+                                    <svg id="continentsSvg">
+                                        <g id="wrapper" style="opacity: 1; font-size: 15px; background-color: white; width: 250px; padding: 1px; left: 1px; top: 217px;right:5px;" transform="translate(0, 15)"></g>
+                                    </svg>
+                                </div>
                             </td>
+                            <td>
+                                <div id="ttText" style="opacity: 0; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
+
+                                    <p style="color: cornflowerblue; font-size: small;">Explore Clients/country by mouseover and click on bubbles</p>
+
+                                </div>
+                            </td>
+
                         </tr>
                     </tbody>
                 </table>
             </div>
             <div tabindex="0" role="tabpanel" id="agnes-tab" aria-labelledby="agnes" hidden="">
-                <h2>Techsquids Journey: 1980 to 2019</h2>
+                <center>
+                    <h4>Techsquids Journey: 1980 to 2019</h4>
+                </center>
 
                 <div id="tsActiveCancel"></div>
             </div>
@@ -85,19 +91,21 @@
     </div>
     <!-- partial -->
     <script src="./assets/tabs.js"></script>
+
+    <!-- Section 1-->
     <script>
         // set the dimensions and margins of the graph
-        var width = 600
+        var width = 400
         var height = 400
 
         // append the svg object to the body of the page
-        var svg = d3.select("#frontSlideCountryGraph")
+        var svg = d3.select("#countryBubbleGraphDiv")
             .append("svg")
-            .attr("width", "100%")
+            .attr("width", width)
             .attr("height", height)
             .attr("position", "relative")
 
-        var continents = ["Asia", "Europe", "Africa", "Oceania", "Americas"];
+        var continents = ["Africa", "Oceania", "Asia", "Europe", "Americas"];
 
         var size = d3.scaleLinear()
             .domain([1011, 8459332])
@@ -112,22 +120,15 @@
         // Read data
         d3.csv("./assets/data/region-ctry.csv", function(data) {
 
-            // Filter a bit the data -> more than 1 million inhabitants
-            //data = data.filter(function (d) { return d.value > 100000000 })
 
-            // Size scale for countries
-            // circle will be between 7 and 55 px wide
-
-            // create a tooltip
             var Tooltip = d3.select("#ttText")
-                .style("opacity", 0)
+                .style("opacity", 1)
                 .attr("class", "tooltip")
                 .style("font-size", "15px")
                 .style("background-color", "white")
 
             .style("padding", "1px")
 
-            // Three function that change the tooltip when user hover / move / leave a cell
             var mouseover = function(d) {
                 Tooltip
                     .style("opacity", 1)
@@ -162,18 +163,18 @@
                 .style("fill-opacity", 0.8)
                 .attr("stroke", "black")
                 .style("stroke-width", 1)
-                .on("mouseover", mouseover) // What to do when hovered
+                .on("mouseover", mouseover)
                 .on("mousemove", mousemove)
                 .on("mouseleave", mouseleave)
-                .call(d3.drag() // call specific function when circle is dragged
+                .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
                     .on("end", dragended));
 
             // Features of the forces applied to the nodes:
             var simulation = d3.forceSimulation()
-                .force("center", d3.forceCenter().x((width / 2)).y(height / 2)) // Attraction to the center of the svg area
-                .force("charge", d3.forceManyBody().strength(.4)) // Nodes are attracted one each other of value is > 0
+                .force("center", d3.forceCenter().x((width / 2)).y(height / 2))
+                .force("charge", d3.forceManyBody().strength(.4))
                 .force("collide", d3.forceCollide().strength(.4).radius(function(d) {
                     return (size(d.value) + 3)
                 }).iterations(1)) // Force that avoids circle overlapping
@@ -213,10 +214,17 @@
                 .selectAll('text')
                 .data(continents)
                 .enter()
-                .append('text')
+
+            .append('text')
                 .attr("font-size", 15)
+                .attr("text-anchor", "left")
                 .attr('x', function(d, i) {
-                    return 60 * i;
+                    if (i == 1 || i == 3 || i == 4) {
+                        return 55 * i;
+
+                    } else {
+                        return 60 * i;
+                    }
                 })
                 .text(function(d) {
                     return d;
@@ -227,8 +235,137 @@
 
 
         });
-    </script>
 
+        //Regions Bar chart
+
+        var marginRegionBar = {
+                top: 40,
+                right: 30,
+                bottom: 30,
+                left: 20
+            },
+            marginRegionWidth = 300 - marginRegionBar.left - marginRegionBar.right,
+            marginRegionHight = 400 - marginRegionBar.top - marginRegionBar.bottom;
+
+        var greyColor = "#898989";
+        var barColor = d3.interpolateInferno(0.4);
+        var highlightColor = d3.interpolateInferno(0.3);
+
+        var formatPercent = d3.format(".1s");
+
+        var svgBar = d3.select("#regionsGraphDiv").append("svg")
+            .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
+            .attr("height", marginRegionHight + marginRegionBar.top + marginRegionBar.bottom)
+            .append("g")
+            .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
+
+        var xBar = d3.scaleBand()
+            .range([0, marginRegionWidth])
+            .padding(0.4);
+        var yBar = d3.scaleLinear()
+            .range([marginRegionHight, 0]);
+
+        var xAxisBar = d3.axisBottom(xBar).tickSize([]).tickPadding(5);
+        var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
+
+        var datasetBarChart = [{
+            "region": "Africa",
+            "value": 59979,
+            "year": 1990
+        }, {
+            "region": "Oceania",
+            "value": 1134890,
+            "year": 1998
+        }, {
+            "region": "Asia",
+            "value": 3659432,
+            "year": 1987
+        }, {
+            "region": "Europe",
+            "value": 7344447,
+            "year": 1994
+        }, {
+            "region": "Americas",
+            "value": 9650773,
+            "year": 1980
+        }];
+
+        xBar.domain(datasetBarChart.map(d => {
+            return d.region;
+        }));
+        // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
+        yBar.domain([10000, 9650773]);
+
+        svgBar.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + marginRegionHight + ")")
+            .call(yAxisBar);
+        svgBar.append("g")
+            .attr("class", "y axis")
+            .call(yBar);
+
+        svgBar.selectAll(".bar")
+            .data(datasetBarChart)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .style("display", d => {
+                return d.value;
+            })
+            .style("fill", d => {
+                return color(d.region)
+            })
+            .attr("x", d => {
+                return xBar(d.region);
+            })
+            .attr("width", xBar.bandwidth())
+            .attr("y", d => {
+                return marginRegionHight;
+            })
+            .attr("height", 0)
+            .transition()
+            .duration(1000)
+            .delay(function(d, i) {
+                return i * 200;
+            })
+            .attr("y", d => {
+                return yBar(d.value);
+            })
+            .attr("height", d => {
+                return marginRegionHight - yBar(d.value);
+            });
+
+        svgBar.selectAll(".label")
+            .data(datasetBarChart)
+            .enter()
+            .append("text")
+            .attr("class", "label")
+            .style("display", d => {
+                return d.value;
+            })
+            .style("font-size", "12px")
+            .attr("x", (d => {
+                return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
+            }))
+            .style("fill", d => {
+                return color(d.region)
+            })
+            .attr("y", d => {
+                return marginRegionHight;
+            })
+            .attr("height", 0)
+            .transition()
+            .duration(750)
+            .delay((d, i) => {
+                return i * 150;
+            })
+            .text(d => {
+                return formatPercent(d.value);
+            })
+            .attr("y", d => {
+                return yBar(d.value);
+            })
+            .attr("dy", "-.7em");
+    </script>
     <!-- 2nd section script -->
     <script>
         // set the dimensions and margins of the graph
