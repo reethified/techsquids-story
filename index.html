@@ -10,6 +10,9 @@
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+    <!-- 3rd Journey Tab Load separately -->
+    <link rel="import" href="journey.html">
 </head>
 
 <body>
@@ -22,71 +25,95 @@
         </center>
         <div class="tabs">
             <div role="tablist" aria-label="Entertainment">
-                <button role="tab" aria-selected="true" aria-controls="nils-tab" id="nils">
+                <button role="tab" aria-selected="true" aria-controls="complexcomplex" id="nils">
       1
     </button>
                 <button role="tab" aria-selected="false" aria-controls="agnes-tab" id="agnes" tabindex="-1">
       2
     </button>
-                <button role="tab" aria-selected="false" aria-controls="complexcomplex" id="complex" tabindex="-1" data-deletable="">
+                <button role="tab" aria-selected="false" aria-controls="nils-tab" id="complex" tabindex="-1" data-deletable="">
       3
     </button>
             </div>
+            <div tabindex="0" role="tabpanel" id="complexcomplex" aria-labelledby="nils">
 
-            <div tabindex="0" role="tabpanel" id="nils-tab" aria-labelledby="nils">
+                <iframe src="journey.html" style="border: none; padding: 0; width: 610px; height: 430px"></iframe>
+
+            </div>
+            <div tabindex="2" role="tabpanel" id="nils-tab" aria-labelledby="complex" hidden="">
 
                 <center>
-                    <h4>Region and country wise clients</h4>
+                    <h4 style="color: rgb(102, 100, 100)">Worldwide Clients: Continent view</h4>
                 </center>
                 <!-- Create a div where the graph will take place -->
                 <table>
                     <tbody>
                         <tr>
-                            <td style="width: 30%;">
-                                <div id="regionsGraphDiv" style="width: 100%;"></div>
+                            <td style="width: 60%;">
+                                <center>
+                                    <div id="regionsGraphDiv"></div>
+                                </center>
 
                             </td>
+                            <td style="width: 40%; font-size: 14px; padding-top: 10%;">
+                                <ul class="timeline">
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth of US$40 M in 2020</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9 Millions clients worldwide</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5 continents & 103 countries in 40 years</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1980 in Americas</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1989 in Europe</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1998 in Asia</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2011 in Africa</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in Oceania</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Grwoth in Africa is lower compared to Oceania</span></li>
+                                </ul>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <div tabindex="1" role="tabpanel" id="agnes-tab" aria-labelledby="agnes" hidden="">
+                <center>
+                    <h4 style="color: rgb(102, 100, 100)">Worldwide Clients: Country view</h4>
+                </center>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="width: 100%;">
+                                <div id="ttText" style="opacity: 1; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
+
+                                    <p style="color: rgb(102, 100, 100); font-size: 15px;">[ Explore Clients/country by mouseover and drag bubbles ]</p>
+
+                                </div>
+                                <center>
+                                    <div id="countryBubbleGraphDiv" style="width: 100%;"></div>
+                                </center>
+                            </td>
                             <td>
-                                <div id="countryBubbleGraphDiv"></div>
                             </td>
 
                         </tr>
                         <tr>
-                            <td style="width:70%;">
-
-                                <div style="height: 20px; ">
-                                    <svg id="continentsSvg">
+                            <td colspan="2">
+                                <center>
+                                    <div style="height: 20px; width: 400px; padding-top: 10px;">
+                                        <svg id="continentsSvg" width="400px" hight="20px">
                                         <g id="wrapper" style="opacity: 1; font-size: 15px; background-color: white; width: 250px; padding: 1px; left: 1px; top: 217px;right:5px;" transform="translate(0, 15)"></g>
                                     </svg>
-                                </div>
-                            </td>
-                            <td>
-                                <div id="ttText" style="opacity: 0; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
+                                    </div>
+                                </center>
 
-                                    <p style="color:black; font-size: 15px;">[ Explore Clients/country by mouseover and drag bubbles ]</p>
-
-                                </div>
                             </td>
 
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <div tabindex="0" role="tabpanel" id="agnes-tab" aria-labelledby="agnes" hidden="">
-                <center>
-                    <h4>Techsquids Journey: 1980 to 2019</h4>
-                </center>
 
-                <div id="tsActiveCancel"></div>
-            </div>
-            <div tabindex="0" role="tabpanel" id="complexcomplex" aria-labelledby="complex" hidden="">
-                <p>
-                    Fear of complicated buildings:
-                </p>
-                <p>
-                    A complex complex complex.
-                </p>
-            </div>
+
         </div>
     </div>
     <!-- partial -->
@@ -95,17 +122,17 @@
     <!-- Section 1-->
     <script>
         // set the dimensions and margins of the graph
-        var width = 400
+        var width = 600
         var height = 400
 
         // append the svg object to the body of the page
         var svg = d3.select("#countryBubbleGraphDiv")
             .append("svg")
-            .attr("width", width)
+            .attr("width", "100%")
             .attr("height", height)
             .attr("position", "relative")
 
-        var continents = ["Africa", "Oceania", "Asia", "Europe", "Americas"];
+        var continents = ["Africa", "Europe", "Oceania", "Asia", "Americas"];
 
         var size = d3.scaleLinear()
             .domain([11, 246000])
@@ -131,7 +158,7 @@
 
             var mouseover = function(d) {
                 Tooltip
-                    .style("opacity", 1)
+                    .style("opacity", 0.8)
             }
             var mousemove = function(d) {
                 Tooltip
@@ -210,21 +237,18 @@
                 d.fx = null;
                 d.fy = null;
             }
+
+
             d3.select("#continentsSvg").select('#wrapper')
                 .selectAll('text')
                 .data(continents)
                 .enter()
-
-            .append('text')
+                .append('text')
                 .attr("font-size", 15)
                 .attr("text-anchor", "left")
                 .attr('x', function(d, i) {
-                    if (i == 1 || i == 3 || i == 4) {
-                        return 55 * i;
+                    return 80 * i;
 
-                    } else {
-                        return 60 * i;
-                    }
                 })
                 .text(function(d) {
                     return d;
@@ -251,7 +275,7 @@
         var barColor = d3.interpolateInferno(0.4);
         var highlightColor = d3.interpolateInferno(0.3);
 
-        var formatPercent = d3.format(".1s");
+        var formatPercent = d3.format(".2s");
 
         var svgBar = d3.select("#regionsGraphDiv").append("svg")
             .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
@@ -260,12 +284,14 @@
             .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
 
         var xBar = d3.scaleBand()
+            .domain(continents)
             .range([0, marginRegionWidth])
             .padding(0.4);
+
         var yBar = d3.scaleLinear()
             .range([marginRegionHight, 0]);
 
-        var xAxisBar = d3.axisBottom(xBar).tickSize([]).tickPadding(5);
+        var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
         var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
 
         var datasetBarChart = [{
@@ -285,16 +311,22 @@
             "value": 465073
         }];
 
-        xBar.domain(datasetBarChart.map(d => {
-            return d.region;
-        }));
+
         // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
         yBar.domain([0, 600000]);
 
         svgBar.append("g")
             .attr("class", "x axis")
             .attr("transform", "translate(0," + marginRegionHight + ")")
-            .call(yAxisBar);
+            .call(xAxisBar)
+            .selectAll("text")
+            .attr("y", 10)
+            .attr("x", 1)
+            .attr("dy", ".25em")
+            .attr("transform", "rotate(15)")
+            .style("text-anchor", "start")
+            .style("color", "rgb(102, 100, 100)");
+
         svgBar.append("g")
             .attr("class", "y axis")
             .call(yBar);
@@ -362,187 +394,7 @@
             })
             .attr("dy", "-.7em");
     </script>
-    <!-- 2nd section script -->
-    <script>
-        // set the dimensions and margins of the graph
-        var margin = {
-                top: 20,
-                right: 100,
-                bottom: 30,
-                left: 70
-            },
-            widths2 = 800 - margin.left - margin.right,
-            heights2 = 400 - margin.top - margin.bottom;
 
-        // parse the date / time
-        var parseTime = d3.timeParse("%Y");
-
-        // set the ranges
-        var x = d3.scaleTime().range([0, widths2]);
-        var y0 = d3.scaleLinear().range([heights2, 0]);
-        var y1 = d3.scaleLinear().range([heights2, 0]);
-
-        // define the 1st line
-        var valueline = d3.line()
-            .x(function(d) {
-                return x(d.date);
-            })
-            .y(function(d) {
-                return y0(d.close);
-            });
-
-        // define the 2nd line
-        var valueline2 = d3.line()
-            .x(function(d) {
-                return x(d.date);
-            })
-            .y(function(d) {
-                return y1(d.open);
-            });
-
-        // append the svg obgect to the body of the page
-        // appends a 'group' element to 'svg'
-        // moves the 'group' element to the top left margin
-        var svgs2 = d3.select("#tsActiveCancel").append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", heights2 + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform",
-                "translate(" + margin.left + "," + margin.top + ")");
-
-        // Get the data
-        d3.csv("./assets/data/acct_count.csv", function(error, data) {
-            if (error) throw error;
-
-            // format the data
-            data.forEach(function(d) {
-                d.date = parseTime(d.date);
-                d.close = +d.close;
-                d.open = +d.open;
-            });
-
-            // Scale the range of the data
-            x.domain(d3.extent(data, function(d) {
-                return d.date;
-            }));
-            y0.domain([0, d3.max(data, function(d) {
-                return Math.max(d.close);
-            })]);
-            y1.domain([0, d3.max(data, function(d) {
-                return Math.max(d.open);
-            })]);
-
-            // Add the valueline path.
-            svgs2.append("path")
-                .data([data])
-                .attr("class", "lines2")
-                .style("fill", "none")
-                .attr("d", valueline);
-
-            // Add the valueline2 path.
-            svgs2.append("path")
-                .data([data])
-                .attr("class", "lines2")
-                .style("stroke", "red")
-                .attr("d", valueline2);
-
-            // Add the X Axis
-            svgs2.append("g")
-                .attr("transform", "translate(0," + heights2 + ")")
-                .call(d3.axisBottom(x));
-
-            // Add the Y0 Axis
-            svgs2.append("g")
-                .attr("class", "axisSteelBlue")
-                .call(d3.axisLeft(y0));
-
-            // Add the Y1 Axis
-            svgs2.append("g")
-                .attr("class", "axisRed")
-                .attr("transform", "translate( " + widths2 + ", 0 )")
-                .call(d3.axisRight(y1));
-
-
-
-        });
-    </script>
-
-
-    <script>
-        const dividedLine = (parameters, points, searchIterations) => {
-            let currentParameters = parameters(points[0], 0)
-            let currentPointsArray = []
-            let dividedLinesData = [{
-                key: currentParameters,
-                points: currentPointsArray
-            }]
-            points.forEach((point, pointI) => {
-
-                const newParameters = parameters(point, pointI)
-                let matchingParams = newParameters === currentParameters;
-
-                if (typeof currentParameters === "object") {
-                    matchingParams = JSON.stringify(newParameters) === JSON.stringify(currentParameters)
-                }
-
-                if (matchingParams) {
-                    currentPointsArray.push(point)
-                } else {
-                    const lastPoint = currentPointsArray[currentPointsArray.length - 1];
-                    let pointA = lastPoint;
-                    let pointB = point;
-
-                    for (let x = 0; x < searchIterations; x++) {
-                        const keys = Object.keys(pointA)
-                        const findPoints = simpleSearchFunction(pointA, pointB, currentParameters, parameters, keys)
-                        pointA = findPoints[0]
-                        pointB = findPoints[1]
-                    }
-                    currentPointsArray.push(pointB)
-                    currentPointsArray = [pointB, point]
-                    dividedLinesData.push({
-                        key: newParameters,
-                        points: currentPointsArray
-                    })
-                    currentParameters = newParameters
-                }
-            })
-            return dividedLinesData
-        }
-
-        function simpleSearchFunction(pointA, pointB, current, parameters, keys) {
-            const betweenPoint = {};
-            keys.forEach(key => {
-                betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
-            })
-
-            if (JSON.stringify(parameters(betweenPoint)) === JSON.stringify(current)) {
-                return [betweenPoint, pointB]
-            }
-            return [pointA, betweenPoint]
-        }
-
-        function parameters(point) {
-            const steve = new Date("7/9/1997")
-            if (new Date(point.Date) < steve) {
-                return "before"
-            }
-            if (point.Close > 100) {
-                return "top"
-            }
-            return "normal"
-        }
-
-        var styleMap = {
-            before: {
-                "stroke-dasharray": '1, 2'
-            },
-            top: {
-                "stroke": "#00BFA5"
-            },
-            normal: {}
-        }
-    </script>
 </body>
 
 </html>

@@ -7,7 +7,7 @@
 
     <style>
         body {
-            background-color: whitesmoke;
+            background-color: white;
         }
         
          :root {
@@ -15,11 +15,16 @@
             --annotation-context-color: #00796B;
             --annotation-above-color: #00BFA5;
             --annotation-anomaly-color: #E8336D;
+            --annotation-america-color: #FE9733;
+            --annotation-asia-color: #AB70B5;
+            --annotation-oceania-color: #6FBE6E;
+            --annotation-europe-color: #377EB8;
+            --annotation-africa-color: rgb(228, 26, 28);
         }
         
         svg {
             background-color: white;
-            font-family: 'Lato';
+            font-size: 13px;
         }
         
         .axis,
@@ -46,6 +51,22 @@
         
         .annotation text {
             fill: var(--annotation-context-color);
+        }
+        
+        .annotation.europe text {
+            fill: var(--annotation-europe-color);
+        }
+        
+        .annotation.africa text {
+            fill: var(--annotation-africa-color);
+        }
+        
+        .annotation.oceania text {
+            fill: var(--annotation-oceania-color);
+        }
+        
+        .annotation.asia text {
+            fill: var(--annotation-asia-color);
         }
         
         .annotation.above path {
@@ -81,18 +102,21 @@
 </head>
 
 <body>
-    <svg width=960 height=500>
+    <div id="journeyChildDiv" style="width:600; height: 400;"></div>
+    <!--
       <text class="title" x=40 y=50>d3.annotation()</text>
       <text x=40 y=80>AAPL stock example</text>
+
     </svg>
+    -->
     <script src="https://d3js.org/d3.v4.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/1.12.1/d3-annotation.min.js"></script>
+    <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
     <script src="./assets/divided-line.js"></script>
     <script>
-        const width = 960
-        const height = 500
+        const width = 600;
+        const height = 400;
         const margin = {
-            top: 180,
+            top: 50,
             bottom: 50,
             left: 50,
             right: 50
@@ -117,12 +141,16 @@
             /* --- creating line using divided line code --- */
             var dLineData = dividedLine(parameters, json, 20);
 
-            const svg = d3.select("svg")
+            const svgLineChart = d3.select("#journeyChildDiv")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("position", "relative");
 
-            svg.append('g')
+            svgLineChart.append('g')
                 .attr('class', 'lineChart')
 
-            svg.select("g.lineChart")
+            svgLineChart.select("g.lineChart")
                 .selectAll("path.segment")
                 .data(dLineData)
                 .enter()
@@ -138,65 +166,74 @@
                     }, this)
                 })
 
-            const yAxis = d3.axisLeft(y).ticks(3).tickFormat(d3.format(".1s"))
+
+            const yAxis = d3.axisLeft(y).ticks(5).tickFormat(d3.format(".2s"))
             const xAxis = d3.axisBottom(x)
-            svg.append("g")
+            svgLineChart.append("g")
                 .attr("class", "axis y")
                 .attr("transform", "translate(" + margin.left + ", 0)")
                 .call(yAxis);
-            svg.append("g")
+            svgLineChart.append("g")
                 .attr("class", "axis x")
                 .attr("transform", "translate(0," + (height - margin.bottom) + ")")
                 .call(xAxis);
 
+
+            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
             /* Code below relevant for annotations */
             const annotations = [{
                     note: {
                         label: "Europe Launch"
                     },
+                    className: "europe",
                     subject: {
-                        y1: margin.top,
+                        y1: margin.top + 150,
                         y2: height - margin.bottom
                     },
-                    y: margin.top,
+                    y: margin.top + 150,
                     data: {
                         x: "04/01/1989"
                     } //position the x based on an x scale
+
+
                 }, {
                     note: {
                         label: "Asia Launch"
                     },
+                    className: "asia",
                     subject: {
-                        y1: margin.top,
+                        y1: margin.top + 80,
                         y2: height - margin.bottom
                     },
-                    y: margin.top,
+                    y: margin.top + 80,
                     data: {
-                        x: "11/01/1998"
-                    }
-                }, {
-                    note: {
-                        label: "Oceania Launch"
-                    },
-                    subject: {
-                        y1: margin.top,
-                        y2: height - margin.bottom
-                    },
-                    y: margin.top,
-                    data: {
-                        x: "10/23/2011"
+                        x: "11/01/1991"
                     }
                 }, {
                     note: {
                         label: "Africa Launch"
                     },
+                    className: "africa",
                     subject: {
-                        y1: margin.top,
+                        y1: margin.top + 90,
                         y2: height - margin.bottom
                     },
-                    y: margin.top,
+                    y: margin.top + 90,
                     data: {
-                        x: "10/23/2015"
+                        x: "10/23/2000"
+                    }
+                }, {
+                    note: {
+                        label: "Oceania Launch"
+                    },
+                    className: "oceania",
+                    subject: {
+                        y1: margin.top + 30,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top + 30,
+                    data: {
+                        x: "10/23/2010"
                     }
                 }, {
                     note: {
@@ -208,13 +245,14 @@
                     className: "anomaly",
                     type: d3.annotationCalloutCircle,
                     subject: {
-                        radius: 35
+                        radius: 25
                     },
                     data: {
                         x: "6/21/2007",
                         y: 61000
                     },
-                    dx: 40
+                    dx: 40,
+                    y: margin.top + 150
                 }, {
                     note: {
                         label: "0.2M clients",
@@ -240,6 +278,7 @@
                         "lineType": "none",
                         "orientation": "top",
                         "align": "middle"
+
                     }
                 }
             )
@@ -257,12 +296,18 @@
                 .annotations(annotations)
                 .textWrap(20)
 
-            d3.select("svg")
+
+
+            svgLineChart
                 .append("g")
-                .attr("class", "annotation-group")
-                .call(makeAnnotations)
+                .call(makeAnnotations);
+
 
         });
+
+        /* d3.selectAll("text").each(function(d, i) {
+             console.log("this " + d)
+         });*/
     </script>
 </body>
 
