@@ -169,27 +169,24 @@
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("class", "svg");
 
-        var color = d3.scaleOrdinal().domain(["Active", "Cancel"]).range(["#0096ff", "#ff007e"]);
+        var statusAccount = ["active", "cancel"];
+        var color = d3.scaleOrdinal().domain(statusAccount).range(["#0096ff", "#ff007e"]);
 
-        svg.append("text")
+
+        var legendContainer = svg.append("g").attr("transform", "translate(10,20)");
+        legendContainer.selectAll("text")
+            .data(statusAccount)
+            .enter()
+            .append("text")
             .attr("y", 0)
-            .attr("x", 35)
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Active")
-            .attr("fill", function() {
-                return color("Active");
+            .attr("x", function(d, i) {
+                return 15 + i * 40;
+            })
+            .attr("fill", function(d) {
+                return color(d);
 
-            });
-        svg.append("text")
-            .attr("y", 20)
-            .attr("x", 35)
-            .attr("dy", "1em")
-            .style("text-anchor", "middle")
-            .text("Cancel")
-            .attr("fill", function() {
-                return color("Cancel");
-
+            }).text(function(d) {
+                return d;
             });
 
 
