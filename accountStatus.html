@@ -106,6 +106,7 @@
             font-weight: bold;
         }
     </style>
+
 </head>
 
 <body>
@@ -114,11 +115,6 @@
         <tr>
             <td>
                 <div id="industryDropdown" style="font-size: 15px;">Industry:</div>
-            </td>
-
-            <td style="border-color: black; border-style: var(--annotation-above-color);">
-                <div>
-                    <p style="font-size: 15px;">&nbspLegend:<svg id="legend" width=150 height=10 style="padding-top: 2px;"></svg></div>
             </td>
         </tr>
     </table>
@@ -172,6 +168,30 @@
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("class", "svg");
+
+        var color = d3.scaleOrdinal().domain(["Active", "Cancel"]).range(["#0096ff", "#ff007e"]);
+
+        svg.append("text")
+            .attr("y", 0)
+            .attr("x", 35)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Active")
+            .attr("fill", function() {
+                return color("Active");
+
+            });
+        svg.append("text")
+            .attr("y", 20)
+            .attr("x", 35)
+            .attr("dy", "1em")
+            .style("text-anchor", "middle")
+            .text("Cancel")
+            .attr("fill", function() {
+                return color("Cancel");
+
+            });
+
 
         // Import the CSV data
         d3.csv("assets/data/account_count_by_indstry.csv", function(error, data) {
@@ -234,7 +254,7 @@
                 .style("text-anchor", "middle")
                 .text("Clients")
                 .attr("class", "y axis label");
-            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+
 
 
             // Create a dropdown
@@ -253,23 +273,6 @@
                     return d.key;
                 })
 
-
-            var color = d3.scaleOrdinal().range(["#0096ff", "#ff007e"]);
-            d3.select("#legend")
-                .selectAll("text")
-                .data(["Active", "Cancel"]).enter().append("text")
-                .attr("y", 10)
-                .attr("x", function(d, i) {
-                    return 10 + i * 40;
-                }) // spacing
-                .attr("fill", function(d) {
-                    return color(d);
-
-                })
-                .attr("opacity", "0.8")
-                .text(function(d) {
-                    return d;
-                });
 
             var initialGraph = function(industry) {
 
