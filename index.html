@@ -10,9 +10,6 @@
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
-
-    <!-- 3rd Journey Tab Load separately -->
-    <link rel="import" href="journey.html">
 </head>
 
 <body>
@@ -31,16 +28,14 @@
                 <button role="tab" aria-selected="false" aria-controls="agnes-tab" id="agnes" tabindex="-1">
       2
     </button>
-                <button role="tab" aria-selected="false" aria-controls="nils-tab" id="complex" tabindex="-1" data-deletable="">
+                <button role="tab" aria-selected="false" aria-controls="journey-tab" id="journey" tabindex="-2">
       3
     </button>
+                <button role="tab" aria-selected="false" aria-controls="nils-tab" id="complex" tabindex="-3">
+        4
+      </button>
             </div>
             <div tabindex="0" role="tabpanel" id="complexcomplex" aria-labelledby="nils">
-
-                <iframe src="journey.html" style="border: none; padding: 0; width: 610px; height: 430px"></iframe>
-
-            </div>
-            <div tabindex="2" role="tabpanel" id="nils-tab" aria-labelledby="complex" hidden="">
 
                 <center>
                     <h4 style="color: rgb(102, 100, 100)">Worldwide Clients: Continent view</h4>
@@ -74,7 +69,9 @@
 
                     </tbody>
                 </table>
+
             </div>
+
             <div tabindex="1" role="tabpanel" id="agnes-tab" aria-labelledby="agnes" hidden="">
                 <center>
                     <h4 style="color: rgb(102, 100, 100)">Worldwide Clients: Country view</h4>
@@ -113,6 +110,28 @@
                 </table>
             </div>
 
+
+            <div tabindex="2" role="tabpanel" id="nils-tab" aria-labelledby="complex" hidden="">
+                <center>
+                    <h4 style="color: rgb(102, 100, 100)">Active & clients journey by Industry</h4>
+                </center>
+                <table>
+                    <tr>
+                        <td style="width: 80%;"> <iframe id="iframe2" src="accountStatus.html" style="border: none; padding: 0; width: 800px; height: 600px"></iframe></td>
+
+                    </tr>
+                </table>
+
+
+            </div>
+
+            <div tabindex="3" role="tabpanel" id="journey-tab" aria-labelledby="journey" hidden="">
+                <center>
+                    <h4 style="color: rgb(102, 100, 100)">Active Clients Journey</h4>
+                </center>
+
+                <iframe id="iframe1" src="journey.html" style="border: none; padding: 0; width: 610px; height: 430px"></iframe>
+            </div>
 
         </div>
     </div>
@@ -395,6 +414,7 @@
             .attr("dy", "-.7em");
     </script>
 
+    <div style="padding-left:300px; padding-top: 10px; padding-bottom: 30;">By- Rahul Sharma</div>
 </body>
 
 </html>

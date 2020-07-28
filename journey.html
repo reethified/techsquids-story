@@ -83,7 +83,7 @@
         }
         
         .annotation.anomaly text {
-            ƒ fill: var(--annotation-anomaly-color);
+            fill: var(--annotation-anomaly-color);
         }
         
         .annotation-note-bg {
@@ -99,18 +99,14 @@
             font-weight: bold;
         }
     </style>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
+
 </head>
 
 <body>
     <div id="journeyChildDiv" style="width:600; height: 400;"></div>
-    <!--
-      <text class="title" x=40 y=50>d3.annotation()</text>
-      <text x=40 y=80>AAPL stock example</text>
 
-    </svg>
-    -->
-    <script src="https://d3js.org/d3.v4.js"></script>
-    <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
 
     <script>
         const width = 600;
@@ -167,6 +163,16 @@
                 })
 
 
+            svgLineChart.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Clients")
+                .attr("class", "y axis label");
+
+            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
             const yAxis = d3.axisLeft(y).ticks(5).tickFormat(d3.format(".2s"))
             const xAxis = d3.axisBottom(x)
             svgLineChart.append("g")
@@ -305,84 +311,6 @@
 
         });
 
-        //----Divided line code  ----
-        //https://bl.ocks.org/emeeks/03396c05b39b8198685f3e46942c87e3
-        const dividedLine = (parameters, points, searchIterations) => {
-            let currentParameters = parameters(points[0], 0)
-            let currentPointsArray = []
-            let dividedLinesData = [{
-                key: currentParameters,
-                points: currentPointsArray
-            }]
-            points.forEach((point, pointI) => {
-
-                const newParameters = parameters(point, pointI)
-                let matchingParams = newParameters === currentParameters;
-
-                if (typeof currentParameters === "object") {
-                    matchingParams = JSON.stringify(newParameters) === JSON.stringify(currentParameters)
-                }
-
-                if (matchingParams) {
-                    currentPointsArray.push(point)
-                } else {
-                    const lastPoint = currentPointsArray[currentPointsArray.length - 1];
-                    let pointA = lastPoint;
-                    let pointB = point;
-
-                    for (let x = 0; x < searchIterations; x++) {
-                        const keys = Object.keys(pointA)
-                        const findPoints = simpleSearchFunction(pointA, pointB, currentParameters, parameters, keys)
-                        pointA = findPoints[0]
-                        pointB = findPoints[1]
-                    }
-                    currentPointsArray.push(pointB)
-                    currentPointsArray = [pointB, point]
-                    dividedLinesData.push({
-                        key: newParameters,
-                        points: currentPointsArray
-                    })
-                    currentParameters = newParameters
-                }
-            })
-            return dividedLinesData
-        }
-
-        function simpleSearchFunction(pointA, pointB, current, parameters, keys) {
-            const betweenPoint = {};
-            keys.forEach(key => {
-                betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
-            })
-
-            if (JSON.stringify(parameters(betweenPoint)) === JSON.stringify(current)) {
-                return [betweenPoint, pointB]
-            }
-            return [pointA, betweenPoint]
-        }
-
-        function parameters(point) {
-            const steve = new Date("7/9/1997")
-            if (new Date(point.Date) < steve) {
-                return "before"
-            }
-            if (point.Close > 100) {
-                return "top"
-            }
-            return "normal"
-        }
-
-        var styleMap = {
-            before: {
-                "stroke-dasharray": '1, 2'
-            },
-            top: {
-                "stroke": "#00BFA5"
-            },
-            normal: {}
-        }
-    </script>
-
-    <script>
         //----Divided line code  ----
         //https://bl.ocks.org/emeeks/03396c05b39b8198685f3e46942c87e3
         const dividedLine = (parameters, points, searchIterations) => {

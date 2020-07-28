@@ -3,39 +3,145 @@
 
 
 <head>
+
     <meta charset="utf-8">
     <title>D3 Page Template</title>
     <script src="https://d3js.org/d3.v4.js"></script>
+    <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
     <style>
+        body {
+            background-color: white;
+        }
+        
         .line {
+            stroke: rgb(0, 191, 165);
+        }
+        
+         :root {
+            --line-chart-color: #607D8B;
+            --annotation-context-color: #00796B;
+            --annotation-above-color: #00BFA5;
+            --annotation-anomaly-color: #E8336D;
+            --annotation-america-color: #FE9733;
+            --annotation-asia-color: #AB70B5;
+            --annotation-oceania-color: #6FBE6E;
+            --annotation-europe-color: #377EB8;
+            --annotation-africa-color: rgb(228, 26, 28);
+        }
+        
+        svg {
+            background-color: white;
+            font-size: 13px;
+        }
+        
+        .axis,
+        .axis text {
+            fill: var(--line-chart-color);
+        }
+        
+        .axis line,
+        path {
+            stroke: var(--line-chart-color);
+        }
+        
+        path {
             fill: none;
-            stroke: #EF5285;
+        }
+        
+        .annotation path {
+            stroke: var(--annotation-context-color);
+        }
+        
+        .annotation:not(.above):not(.anomaly) path {
+            stroke-dasharray: 1, 3;
+        }
+        
+        .annotation text {
+            fill: var(--annotation-context-color);
+        }
+        
+        .annotation.europe text {
+            fill: var(--annotation-europe-color);
+        }
+        
+        .annotation.africa text {
+            fill: var(--annotation-africa-color);
+        }
+        
+        .annotation.oceania text {
+            fill: var(--annotation-oceania-color);
+        }
+        
+        .annotation.asia text {
+            fill: var(--annotation-asia-color);
+        }
+        
+        .annotation.above path {
+            stroke: var(--annotation-above-color);
+        }
+        
+        .annotation.above text {
+            fill: var(--annotation-above-color);
+        }
+        
+        .annotation.anomaly path {
+            stroke: var(--annotation-anomaly-color);
             stroke-width: 2px;
+        }
+        
+        .annotation.anomaly text {
+            fill: var(--annotation-anomaly-color);
+        }
+        
+        .annotation-note-bg {
+            fill: rgba(0, 0, 0, 0);
+        }
+        
+        .annotation-note-title {
+            font-weight: bold;
+        }
+        
+        text.title {
+            font-size: 1.2em;
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
-    <h4>Active and Cancel Clients Distribution over year</h4>
-    <div id="industryDropdown">Industry:</div>
-    <div id="graph"></div>
+
+    <table>
+        <tr>
+            <td>
+                <div id="industryDropdown" style="font-size: 15px;">Industry:</div>
+            </td>
+
+            <td style="border-color: black; border-style: var(--annotation-above-color);">
+                <div>
+                    <p style="font-size: 15px;">&nbspLegend:<svg id="legend" width=150 height=10 style="padding-top: 2px;"></svg></div>
+            </td>
+        </tr>
+    </table>
+
+    <div id="graph" style="padding-bottom: 50px; width: 600; height: 400;"></div>
+    </div>
     <script>
         // Set the margins
         //hotel
 
         var industryMax = {
-            "Hotel": 39053,
-            "Finance": 59249,
-            "Healthcare": 85775,
-            "Retail": 134012
+            "Hotel": 40000,
+            "Finance": 60000,
+            "Healthcare": 86000,
+            "Retail": 140000
         };
         var margin = {
-                top: 60,
-                right: 100,
+                top: 20,
+                right: 0,
                 bottom: 20,
                 left: 80
             },
-            width = 850 - margin.left - margin.right,
+            width = 600 - margin.left - margin.right,
             height = 370 - margin.top - margin.bottom;
 
 
@@ -45,7 +151,7 @@
 
         // Set the ranges
         var x = d3.scaleTime().range([0, width - margin.right])
-            .domain([new Date('01/01/1981'), new Date('1/1/2020')])
+            .domain([new Date('01/01/1981'), new Date('1/1/2025')])
         var y = d3.scaleLinear().range([height, 0]);
 
 
@@ -63,8 +169,6 @@
             .append("svg")
             .style("width", width + margin.left + margin.right + "px")
             .style("height", height + margin.top + margin.bottom + "px")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
             .attr("class", "svg");
@@ -88,15 +192,15 @@
                 .key(function(d) {
                     return d.Status;
                 })
-                .entries(data)
+                .entries(data);
+
+
 
             // Scale the range of the data
             x.domain(d3.extent(data, function(d) {
                 return d.Year;
             }));
-            y.domain([0, d3.max(data, function(d) {
-                return d.Clients;
-            })]);
+            y.domain([0, industryMax["Hotel"]]);
 
             // Set up the x axis
             var xaxis = svg.append("g")
@@ -108,8 +212,6 @@
                     .tickSizeInner(0)
                     .tickPadding(10));
 
-            // Add the Y Axis
-
             yScale = d3.axisLeft(y)
                 .ticks(5)
                 .tickSizeInner(0)
@@ -117,7 +219,7 @@
                 .tickSize(0, 0)
                 .tickFormat(d3.format(".2s"));
             var yaxis = svg.append("g")
-                .attr("class", "yaxis")
+                .attr("class", "y axis")
                 .attr("id", "yaxis")
                 .call(yScale);
 
@@ -132,6 +234,8 @@
                 .style("text-anchor", "middle")
                 .text("Clients")
                 .attr("class", "y axis label");
+            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+
 
             // Create a dropdown
             var industryMenu = d3.select("#industryDropdown")
@@ -149,6 +253,23 @@
                     return d.key;
                 })
 
+
+            var color = d3.scaleOrdinal().range(["#0096ff", "#ff007e"]);
+            d3.select("#legend")
+                .selectAll("text")
+                .data(["Active", "Cancel"]).enter().append("text")
+                .attr("y", 10)
+                .attr("x", function(d, i) {
+                    return 10 + i * 40;
+                }) // spacing
+                .attr("fill", function(d) {
+                    return color(d);
+
+                })
+                .attr("opacity", "0.8")
+                .text(function(d) {
+                    return d;
+                });
 
             var initialGraph = function(industry) {
 
@@ -170,13 +291,13 @@
                     })
                     .enter()
                     .append("path")
-
-                initialPath
                     .attr("d", function(d) {
                         return valueLine(d.values)
                     })
                     .attr("class", "line")
-
+                    .style("stroke", function(d) { // Add dynamically
+                        return d.color = color(d.key);
+                    });
             }
 
 
@@ -199,7 +320,7 @@
 
                 y.domain([0, industryMax[industry]]);
 
-                svg.selectAll(".yaxis").data(selectindustry)
+                svg.selectAll("#yaxis").data(selectindustry)
                     .transition().duration(1500) // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
                     .call(yScale);
 
@@ -231,9 +352,17 @@
 
             });
 
+        });
 
-
-        })
+        var styleMap = {
+            before: {
+                "stroke-dasharray": '1, 2'
+            },
+            top: {
+                "stroke": "#00BFA5"
+            },
+            normal: {}
+        }
     </script>
 </body>
 
