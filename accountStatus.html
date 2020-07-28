@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="utf-8">
+    <title>D3 Page Template</title>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <style>
+        .line {
+            fill: none;
+            stroke: #EF5285;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <h4>Active and Cancel Clients Distribution over year</h4>
+    <div id="industryDropdown">Industry:</div>
+    <div id="graph"></div>
+    <script>
+        // Set the margins
+        //hotel
+
+        var industryMax = {
+            "Hotel": 39053,
+            "Finance": 59249,
+            "Healthcare": 85775,
+            "Retail": 134012
+        };
+        var margin = {
+                top: 60,
+                right: 100,
+                bottom: 20,
+                left: 80
+            },
+            width = 850 - margin.left - margin.right,
+            height = 370 - margin.top - margin.bottom;
+
+
+        var formatYear = d3.timeFormat("%Y");
+        var parseYear = d3.timeParse("%Y");
+
+
+        // Set the ranges
+        var x = d3.scaleTime().range([0, width - margin.right])
+            .domain([new Date('01/01/1981'), new Date('1/1/2020')])
+        var y = d3.scaleLinear().range([height, 0]);
+
+
+        // Define the line
+        var valueLine = d3.line()
+            .x(function(d) {
+                return x(d.Year);
+            })
+            .y(function(d) {
+                return y(+d.Clients);
+            })
+
+        // Create the svg canvas in the "graph" div
+        var svg = d3.select("#graph")
+            .append("svg")
+            .style("width", width + margin.left + margin.right + "px")
+            .style("height", height + margin.top + margin.bottom + "px")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .attr("class", "svg");
+
+        // Import the CSV data
+        d3.csv("assets/data/account_count_by_indstry.csv", function(error, data) {
+            if (error) throw error;
+
+            // Format the data
+            data.forEach(function(d) {
+                d.Year = parseYear(d.Year);
+                d.Clients = +d.Clients;
+                d.industry = d.industry;
+                d.Status = d.Status;
+            });
+
+            var nest = d3.nest()
+                .key(function(d) {
+                    return d.industry;
+                })
+                .key(function(d) {
+                    return d.Status;
+                })
+                .entries(data)
+
+            // Scale the range of the data
+            x.domain(d3.extent(data, function(d) {
+                return d.Year;
+            }));
+            y.domain([0, d3.max(data, function(d) {
+                return d.Clients;
+            })]);
+
+            // Set up the x axis
+            var xaxis = svg.append("g")
+                .attr("transform", "translate(0," + height + ")")
+                .attr("class", "x axis")
+                .call(d3.axisBottom(x)
+                    .tickSize(0, 0)
+                    .tickFormat(d3.timeFormat("%Y"))
+                    .tickSizeInner(0)
+                    .tickPadding(10));
+
+            // Add the Y Axis
+
+            yScale = d3.axisLeft(y)
+                .ticks(5)
+                .tickSizeInner(0)
+                .tickPadding(6)
+                .tickSize(0, 0)
+                .tickFormat(d3.format(".2s"));
+            var yaxis = svg.append("g")
+                .attr("class", "yaxis")
+                .attr("id", "yaxis")
+                .call(yScale);
+
+
+
+            // Add a label to the y axis
+            svg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - 60)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Clients")
+                .attr("class", "y axis label");
+
+            // Create a dropdown
+            var industryMenu = d3.select("#industryDropdown")
+
+            industryMenu
+                .append("select")
+                .selectAll("option")
+                .data(nest)
+                .enter()
+                .append("option")
+                .attr("value", function(d) {
+                    return d.key;
+                })
+                .text(function(d) {
+                    return d.key;
+                })
+
+
+            var initialGraph = function(industry) {
+
+                var selectindustry = nest.filter(function(d) {
+                    return d.key == industry;
+                })
+
+                var selectindustryGroups = svg.selectAll(".industryGroups")
+                    .data(selectindustry, function(d) {
+                        return d ? d.key : this.key;
+                    })
+                    .enter()
+                    .append("g")
+                    .attr("class", "industryGroups")
+
+                var initialPath = selectindustryGroups.selectAll(".line")
+                    .data(function(d) {
+                        return d.values;
+                    })
+                    .enter()
+                    .append("path")
+
+                initialPath
+                    .attr("d", function(d) {
+                        return valueLine(d.values)
+                    })
+                    .attr("class", "line")
+
+            }
+
+
+
+
+            initialGraph("Hotel")
+
+
+            // Update the data
+            var updateGraph = function(industry) {
+
+                var selectindustry = nest.filter(function(d) {
+                    return d.key == industry;
+                })
+
+
+                var selectindustryGroups = svg.selectAll(".industryGroups")
+                    .data(selectindustry);
+
+
+                y.domain([0, industryMax[industry]]);
+
+                svg.selectAll(".yaxis").data(selectindustry)
+                    .transition().duration(1500) // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+                    .call(yScale);
+
+
+
+
+                selectindustryGroups.selectAll("path.line")
+                    .data(function(d) {
+                        return (d.values);
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("d", function(d) {
+                        return valueLine(d.values)
+                    })
+
+
+
+            }
+
+            industryMenu.on('change', function() {
+
+                var selectedindustry = d3.select(this)
+                    .select("select")
+                    .property("value")
+
+                updateGraph(selectedindustry)
+
+
+            });
+
+
+
+        })
+    </script>
+</body>
+
+</html>
