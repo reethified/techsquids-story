@@ -136,10 +136,159 @@
 
         </div>
     </div>
-    <!-- partial -->
-    <script src="./assets/tabs.js"></script>
+
+
+    <center>
+        <div style="padding-bottom: 30; padding-top: 20px;">By- Rahul Sharma</div>
+    </center>
+
 
     <!-- Section 1-->
+
+    <script>
+        //Regions Bar chart
+
+        var continents = ["Africa", "Europe", "Oceania", "Asia", "Americas"];
+
+        // Color palette for continents?
+        var color = d3.scaleOrdinal()
+            .domain(continents)
+            .range(d3.schemeSet1);
+        var marginRegionBar = {
+                top: 40,
+                right: 30,
+                bottom: 30,
+                left: 20
+            },
+            marginRegionWidth = 300 - marginRegionBar.left - marginRegionBar.right,
+            marginRegionHight = 400 - marginRegionBar.top - marginRegionBar.bottom;
+
+        var greyColor = "#898989";
+        var barColor = d3.interpolateInferno(0.4);
+        var highlightColor = d3.interpolateInferno(0.3);
+
+        var formatPercent = d3.format(".2s");
+
+        var svgBar = d3.select("#regionsGraphDiv").append("svg")
+            .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
+            .attr("height", marginRegionHight + marginRegionBar.top + marginRegionBar.bottom)
+            .append("g")
+            .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
+
+        var xBar = d3.scaleBand()
+            .domain(continents)
+            .range([0, marginRegionWidth])
+            .padding(0.4);
+
+        var yBar = d3.scaleLinear()
+            .range([marginRegionHight, 0]);
+
+        var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
+        var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
+
+        var datasetBarChart = [{
+            "region": "Africa",
+            "value": 5893
+        }, {
+            "region": "Europe",
+            "value": 73446
+        }, {
+            "region": "Oceania",
+            "value": 113489
+        }, {
+            "region": "Asia",
+            "value": 365937
+        }, {
+            "region": "Americas",
+            "value": 565074
+        }];
+
+
+        // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
+        yBar.domain([0, 600000]);
+
+        svgBar.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + marginRegionHight + ")")
+            .call(xAxisBar)
+            .selectAll("text")
+            .attr("y", 10)
+            .attr("x", 1)
+            .attr("dy", ".25em")
+            .attr("transform", "rotate(15)")
+            .style("text-anchor", "start")
+            .style("font-color", "rgb(102, 100, 100)");
+
+        svgBar.append("g")
+            .attr("class", "y axis")
+            .call(yBar);
+
+        svgBar.selectAll(".bar")
+            .data(datasetBarChart)
+            .enter().append("rect")
+            .attr("class", "bar")
+            .style("display", d => {
+                return d.value;
+            })
+            .style("fill", d => {
+                return color(d.region)
+            })
+            .attr("x", d => {
+                return xBar(d.region);
+            })
+            .style("opacity", "0.8")
+            .attr("width", xBar.bandwidth())
+            .attr("y", d => {
+                return marginRegionHight;
+            })
+            .attr("height", 0)
+            .transition()
+            .duration(1000)
+            .delay(function(d, i) {
+                return i * 200;
+            })
+            .attr("y", d => {
+                return yBar(d.value);
+            })
+            .attr("height", d => {
+                return marginRegionHight - yBar(d.value);
+            });
+
+        svgBar.selectAll(".label")
+            .data(datasetBarChart)
+            .enter()
+            .append("text")
+            .attr("class", "label")
+            .style("display", d => {
+                return d.value;
+            })
+            .style("font-size", "12px")
+            .attr("x", (d => {
+                return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
+            }))
+            .style("fill", d => {
+                return color(d.region)
+            })
+            .attr("y", d => {
+                return marginRegionHight;
+            })
+            .attr("height", 0)
+            .transition()
+            .duration(750)
+            .delay((d, i) => {
+                return i * 150;
+            })
+            .text(d => {
+                return formatPercent(d.value);
+            })
+            .attr("y", d => {
+                return yBar(d.value);
+            })
+            .attr("dy", "-.7em");
+    </script>
+
+    <!-- Section 2 script-->
+
     <script>
         // set the dimensions and margins of the graph
         var width = 600
@@ -152,17 +301,13 @@
             .attr("height", height)
             .attr("position", "relative")
 
-        var continents = ["Africa", "Europe", "Oceania", "Asia", "Americas"];
 
         var size = d3.scaleLinear()
             .domain([11, 246000])
             .range([7, 55]);
 
 
-        // Color palette for continents?
-        var color = d3.scaleOrdinal()
-            .domain(continents)
-            .range(d3.schemeSet1);
+
 
         // Read data
         d3.csv("./assets/data/region-ctry.csv", function(data) {
@@ -279,144 +424,17 @@
 
 
         });
-
-        //Regions Bar chart
-
-        var marginRegionBar = {
-                top: 40,
-                right: 30,
-                bottom: 30,
-                left: 20
-            },
-            marginRegionWidth = 300 - marginRegionBar.left - marginRegionBar.right,
-            marginRegionHight = 400 - marginRegionBar.top - marginRegionBar.bottom;
-
-        var greyColor = "#898989";
-        var barColor = d3.interpolateInferno(0.4);
-        var highlightColor = d3.interpolateInferno(0.3);
-
-        var formatPercent = d3.format(".2s");
-
-        var svgBar = d3.select("#regionsGraphDiv").append("svg")
-            .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
-            .attr("height", marginRegionHight + marginRegionBar.top + marginRegionBar.bottom)
-            .append("g")
-            .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
-
-        var xBar = d3.scaleBand()
-            .domain(continents)
-            .range([0, marginRegionWidth])
-            .padding(0.4);
-
-        var yBar = d3.scaleLinear()
-            .range([marginRegionHight, 0]);
-
-        var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
-        var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
-
-        var datasetBarChart = [{
-            "region": "Africa",
-            "value": 5893
-        }, {
-            "region": "Europe",
-            "value": 73446
-        }, {
-            "region": "Oceania",
-            "value": 113489
-        }, {
-            "region": "Asia",
-            "value": 365937
-        }, {
-            "region": "Americas",
-            "value": 565074
-        }];
-
-
-        // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
-        yBar.domain([0, 600000]);
-
-        svgBar.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + marginRegionHight + ")")
-            .call(xAxisBar)
-            .selectAll("text")
-            .attr("y", 10)
-            .attr("x", 1)
-            .attr("dy", ".25em")
-            .attr("transform", "rotate(15)")
-            .style("text-anchor", "start")
-            .style("color", "rgb(102, 100, 100)");
-
-        svgBar.append("g")
-            .attr("class", "y axis")
-            .call(yBar);
-
-        svgBar.selectAll(".bar")
-            .data(datasetBarChart)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .style("display", d => {
-                return d.value;
-            })
-            .style("fill", d => {
-                return color(d.region)
-            })
-            .attr("x", d => {
-                return xBar(d.region);
-            })
-            .style("opacity", "0.8")
-            .attr("width", xBar.bandwidth())
-            .attr("y", d => {
-                return marginRegionHight;
-            })
-            .attr("height", 0)
-            .transition()
-            .duration(1000)
-            .delay(function(d, i) {
-                return i * 200;
-            })
-            .attr("y", d => {
-                return yBar(d.value);
-            })
-            .attr("height", d => {
-                return marginRegionHight - yBar(d.value);
-            });
-
-        svgBar.selectAll(".label")
-            .data(datasetBarChart)
-            .enter()
-            .append("text")
-            .attr("class", "label")
-            .style("display", d => {
-                return d.value;
-            })
-            .style("font-size", "12px")
-            .attr("x", (d => {
-                return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
-            }))
-            .style("fill", d => {
-                return color(d.region)
-            })
-            .attr("y", d => {
-                return marginRegionHight;
-            })
-            .attr("height", 0)
-            .transition()
-            .duration(750)
-            .delay((d, i) => {
-                return i * 150;
-            })
-            .text(d => {
-                return formatPercent(d.value);
-            })
-            .attr("y", d => {
-                return yBar(d.value);
-            })
-            .attr("dy", "-.7em");
     </script>
-    <center>
-        <div style="padding-bottom: 30; padding-top: 20px;">By- Rahul Sharma</div>
-    </center>
+
+    <!-- Section 3 is rendered using the iframe 
+        journey.html
+     -->
+    <!-- Section 4 is rendered using the iframe 
+        accountStatus.html
+     -->
+    <!-- partial -->
+    <script src="./assets/tabs.js"></script>
+
 </body>
 
 </html>
