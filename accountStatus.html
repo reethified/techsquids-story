@@ -134,7 +134,7 @@
         var margin = {
                 top: 20,
                 right: 0,
-                bottom: 20,
+                bottom: 40,
                 left: 80
             },
             width = 600 - margin.left - margin.right,
@@ -170,7 +170,7 @@
             .attr("class", "svg");
 
         var statusAccount = ["active", "cancel"];
-        var color = d3.scaleOrdinal().domain(statusAccount).range(["#0096ff", "#ff007e"]);
+        var color = d3.scaleOrdinal().domain(statusAccount).range(["#AB70B5", "#56B353"]);
 
 
         var legendContainer = svg.append("g").attr("transform", "translate(10,20)");
@@ -186,7 +186,8 @@
                 return color(d);
 
             }).text(function(d) {
-                return d;
+                return d == "active" ? "Active" : "Cancel";
+
             });
 
 
@@ -252,7 +253,13 @@
                 .text("Clients")
                 .attr("class", "y axis label");
 
-
+            svg.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 20)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Year")
+                .attr("class", "x axis label");
 
             // Create a dropdown
             var industryMenu = d3.select("#industryDropdown")

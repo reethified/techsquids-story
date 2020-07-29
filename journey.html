@@ -162,6 +162,13 @@
                     }, this)
                 })
 
+            svgLineChart.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 20)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Year")
+                .attr("class", "x axis label");
 
             svgLineChart.append("text")
                 .attr("transform", "rotate(-90)")
