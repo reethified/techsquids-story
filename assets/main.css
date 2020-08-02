@@ -832,6 +832,7 @@ ul.timeline li {
     position: relative;
     height: 2em;
     color: rgb(102, 100, 100);
+    margin-top: 15px;
 }
 
 ul.timeline li:before {
@@ -873,7 +874,7 @@ ul.timeline:after {
  :root {
     --line-chart-color: #607D8B;
     --annotation-context-color: #00796B;
-    --annotation-above-color: #00BFA5;
+    --annotation-above-color: #3b0edb;
     --annotation-anomaly-color: #E8336D;
     --annotation-america-color: #FE9733;
     --annotation-asia-color: #AB70B5;
