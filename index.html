@@ -10,6 +10,7 @@
     <!-- Load d3.js -->
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
 </head>
 
 <body>
@@ -41,7 +42,7 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td style="width: 60%;">
+                            <td>
                                 <center>
                                     <div id="regionsGraphDiv"></div>
                                 </center>
@@ -68,11 +69,11 @@
                             <td>
 
                                 <center>
-                                    <div id="countryBubbleGraphDiv" style="width: 100%;"></div>
+                                    <div id="countryBubbleGraphDiv"></div>
                                 </center>
-                                <div id="ttText" style="opacity: 1; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
+                                <div class="pCustomRadius">
 
-                                    <p style="color: rgb(102, 100, 100); font-size: 15px;">[ Explore Clients/country by mouseover and drag bubbles ]</p>
+                                    <p id="ttText">[ Explore Clients/country by mouseover and drag bubbles ]</p>
 
                                 </div>
                             </td>
@@ -83,27 +84,34 @@
 
             </div>
 
+
             <div tabindex="2" role="tabpanel" id="nils-tab" aria-labelledby="complex" hidden="">
+
                 <center>
                     <h4 style="color: rgb(102, 100, 100)">Active & Cancel clients journey by Industry</h4>
                 </center>
                 <table>
                     <tr>
-                        <td style="width: 80%;"> <iframe id="iframe2" src="accountStatus.html" style="border: none; padding: 0; width: 800px; height: 600px"></iframe></td>
+                        <td>
+                            <div id="industryDropdown" style="font-size: 15px;">Industry:</div>
+                            <div id="asGraph" style="padding-bottom: 50px; width: 600; height: 400;"></div>
+                        </td>
 
 
                     </tr>
                 </table>
-
-
             </div>
 
+
             <div tabindex="3" role="tabpanel" id="journey-tab" aria-labelledby="journey" hidden="">
+
                 <center>
                     <h4 style="color: rgb(102, 100, 100)">Active Clients Journey</h4>
                 </center>
 
                 <iframe id="iframe1" src="journey.html" style="border: none; padding: 0; width: 610px; height: 430px"></iframe>
+
+
             </div>
 
         </div>
@@ -135,7 +143,6 @@
             marginRegionWidth = 300 - marginRegionBar.left - marginRegionBar.right,
             marginRegionHight = 400 - marginRegionBar.top - marginRegionBar.bottom;
 
-        var greyColor = "#898989";
         var barColor = d3.interpolateInferno(0.4);
         var highlightColor = d3.interpolateInferno(0.3);
 
@@ -256,7 +263,7 @@
         // append the svg object to the body of the page
         var svg = d3.select("#countryBubbleGraphDiv")
             .append("svg")
-            .attr("width", "100%")
+            .attr("width", width)
             .attr("height", height)
             .attr("position", "relative")
 
@@ -272,12 +279,6 @@
         d3.csv("./assets/data/region-ctry.csv", function(data) {
 
             var Tooltip = d3.select("#ttText")
-                .style("opacity", 1)
-                .attr("class", "tooltip")
-                .style("font-size", "15px")
-                .style("background-color", "white")
-
-            .style("padding", "1px")
 
             var mouseover = function(d) {
                 Tooltip
@@ -390,6 +391,256 @@
     <!-- Section 4 is rendered using the iframe 
         accountStatus.html
      -->
+    <script>
+        // Set the accountStatusMargins
+        //hotel
+
+        var industryMax = {
+            "Hotel": 40000,
+            "Finance": 60000,
+            "Healthcare": 86000,
+            "Retail": 140000
+        };
+        var accountStatusMargin = {
+                top: 20,
+                right: 0,
+                bottom: 40,
+                left: 80
+            },
+            asWidth = width - accountStatusMargin.left - accountStatusMargin.right,
+            asHeight = height - accountStatusMargin.top - accountStatusMargin.bottom;
+
+
+        var formatYear = d3.timeFormat("%Y");
+        var parseYear = d3.timeParse("%Y");
+
+
+        // Set the ranges
+        var asX = d3.scaleTime().range([0, asWidth - accountStatusMargin.right])
+            .domain([new Date('01/01/1981'), new Date('1/1/2025')])
+        var asY = d3.scaleLinear().range([asHeight, 0]);
+
+
+
+        var asvalueLine = d3.line()
+            .x(function(d) {
+                return asX(d.Year);
+            })
+            .y(function(d) {
+                return asY(+d.Clients);
+            })
+
+        // Create the svg canvas in the "graph" div
+        var asSvg = d3.select("#asGraph")
+            .append("svg")
+            .style("width", asWidth + accountStatusMargin.left + accountStatusMargin.right + "px")
+            .style("height", asHeight + accountStatusMargin.top + accountStatusMargin.bottom + "px")
+            .append("g")
+            .attr("transform", "translate(" + accountStatusMargin.left + "," + accountStatusMargin.top + ")")
+            .attr("class", "svg");
+
+        var statusAccount = ["active", "cancel"];
+        var asColor = d3.scaleOrdinal().domain(statusAccount).range(["#AB70B5", "#56B353"]);
+
+
+        var aslegendContainer = asSvg.append("g").attr("transform", "translate(10,20)");
+        aslegendContainer.selectAll("text")
+            .data(statusAccount)
+            .enter()
+            .append("text")
+            .attr("y", 0)
+            .attr("x", function(d, i) {
+                return 15 + i * 40;
+            })
+            .attr("fill", function(d) {
+                return asColor(d);
+
+            }).text(function(d) {
+                return d == "active" ? "Active" : "Cancel";
+
+            });
+
+
+        // Import the CSV data
+        d3.csv("assets/data/account_count_by_indstry.csv", function(error, data) {
+            if (error) throw error;
+
+            // Format the data
+            data.forEach(function(d) {
+                d.Year = parseYear(d.Year);
+                d.Clients = +d.Clients;
+                d.industry = d.industry;
+                d.Status = d.Status;
+            });
+
+            var nest = d3.nest()
+                .key(function(d) {
+                    return d.industry;
+                })
+                .key(function(d) {
+                    return d.Status;
+                })
+                .entries(data);
+
+
+
+            // Scale the range of the data
+            asX.domain(d3.extent(data, function(d) {
+                return d.Year;
+            }));
+            asY.domain([0, industryMax["Hotel"]]);
+
+            // Set up the x axis
+            var xaxis = asSvg.append("g")
+                .attr("transform", "translate(0," + asHeight + ")")
+                .attr("class", "x axis")
+                .call(d3.axisBottom(asX)
+                    .tickSize(0, 0)
+                    .tickFormat(d3.timeFormat("%Y"))
+                    .tickSizeInner(0)
+                    .tickPadding(10));
+
+            yScale = d3.axisLeft(asY)
+                .ticks(5)
+                .tickSizeInner(0)
+                .tickPadding(6)
+                .tickSize(0, 0)
+                .tickFormat(d3.format(".2s"));
+            var yaxis = asSvg.append("g")
+                .attr("class", "y axis")
+                .attr("id", "yaxis")
+                .call(yScale);
+
+
+
+            // Add a label to the y axis
+            asSvg.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0 - 60)
+                .attr("x", 0 - (asHeight / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Clients")
+                .attr("class", "y axis label");
+
+            asSvg.append("text")
+                .attr("x", asWidth / 2)
+                .attr("y", asHeight + 20)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Year")
+                .attr("class", "x axis label");
+
+            // Create a dropdown
+            var industryMenu = d3.select("#industryDropdown")
+
+            industryMenu
+                .append("select")
+                .selectAll("option")
+                .data(nest)
+                .enter()
+                .append("option")
+                .attr("value", function(d) {
+                    return d.key;
+                })
+                .text(function(d) {
+                    return d.key;
+                })
+
+
+            var initialGraph = function(industry) {
+
+                var selectindustry = nest.filter(function(d) {
+                    return d.key == industry;
+                })
+
+                var selectindustryGroups = asSvg.selectAll(".industryGroups")
+                    .data(selectindustry, function(d) {
+                        return d ? d.key : this.key;
+                    })
+                    .enter()
+                    .append("g")
+                    .attr("class", "industryGroups")
+
+                var initialPath = selectindustryGroups.selectAll(".line")
+                    .data(function(d) {
+                        return d.values;
+                    })
+                    .enter()
+                    .append("path")
+                    .attr("d", function(d) {
+                        return asvalueLine(d.values)
+                    })
+                    .attr("class", "line")
+                    .style("stroke", function(d) { // Add dynamically
+                        return d.color = asColor(d.key);
+                    });
+            }
+
+
+
+
+            initialGraph("Hotel")
+
+
+            // Update the data
+            var updateGraph = function(industry) {
+
+                var selectindustry = nest.filter(function(d) {
+                    return d.key == industry;
+                })
+
+
+                var selectindustryGroups = asSvg.selectAll(".industryGroups")
+                    .data(selectindustry);
+
+
+                asY.domain([0, industryMax[industry]]);
+
+                asSvg.selectAll("#yaxis").data(selectindustry)
+                    .transition().duration(1500) // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+                    .call(yScale);
+
+
+
+
+                selectindustryGroups.selectAll("path.line")
+                    .data(function(d) {
+                        return (d.values);
+                    })
+                    .transition()
+                    .duration(1000)
+                    .attr("d", function(d) {
+                        return asvalueLine(d.values)
+                    })
+
+
+
+            }
+
+            industryMenu.on('change', function() {
+
+                var selectedindustry = d3.select(this)
+                    .select("select")
+                    .property("value")
+
+                updateGraph(selectedindustry)
+
+
+            });
+
+        });
+
+        var styleMap = {
+            before: {
+                "stroke-dasharray": '1, 2'
+            },
+            top: {
+                "stroke": "#00BFA5"
+            },
+            normal: {}
+        }
+    </script>
     <!-- partial -->
     <script src="./assets/tabs.js"></script>
 
