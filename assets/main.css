@@ -938,3 +938,26 @@ path {
     left: 1px;
     top: 217px;
 }
+
+.pGraphLabel {
+    color: rgb(102, 100, 100);
+    font-size: 15px;
+}
+
+.containerCustom {
+    border-style: solid;
+    border-width: 0.6px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 10px;
+    display: inline-block;
+    width: 400px;
+}
+
+.containerCustom p {
+    font-size: 13px;
+}
+
+.border-25 {
+    border-color: rgba(32, 102, 129, 0.25);
+}
