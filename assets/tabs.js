@@ -144,6 +144,7 @@
 
     // Activates any given tab panel
     function activateTab(tab, setFocus) {
+
         setFocus = setFocus || true;
         // Deactivate all other tabs
         deactivateTabs();

@@ -19,221 +19,229 @@ Section 3 html
 </head>
 
 <body>
-    <div id="journeyChildDiv" style="width:600; height: 400;"></div>
+    <button id="complex">test</button>
+    <div id="journeyChildDiv"></div>
 
 
     <script>
         const width = 600;
         const height = 400;
-        const margin = {
+        const journeyMargin = {
             top: 50,
             bottom: 50,
             left: 50,
             right: 50
         }
 
-        const x = d3.scaleTime().range([margin.left, width - margin.right])
-            .domain([new Date('01/01/1981'), new Date('1/1/2020')])
-        const y = d3.scaleLinear().range([height - margin.bottom, margin.top])
-            .domain([4731, 260457])
-
-        d3.csv("assets/data/acct_count.csv", function(error, json) {
-            if (error) throw error;
-
-            var line = d3.line()
-                .x(function(d) {
-                    return x(new Date(d.Date))
-                })
-                .y(function(d) {
-                    return y(d.Close)
-                })
-
-            /* --- creating line using divided line code --- */
-            var dLineData = dividedLine(parameters, json, 20);
-
-            const svgLineChart = d3.select("#journeyChildDiv")
-                .append("svg")
-                .attr("width", width)
-                .attr("height", height)
-                .attr("position", "relative");
-
-            svgLineChart.append('g')
-                .attr('class', 'lineChart')
-
-            svgLineChart.select("g.lineChart")
-                .selectAll("path.segment")
-                .data(dLineData)
-                .enter()
-                .append("path")
-                .attr("d", function(d) {
-                    return line(d.points)
-                })
-                .each(function(d) {
-                    const styles = styleMap[d.key]
-                    Object.keys(styles).forEach(function(k) {
-                        d3.select(this)
-                            .style(k, styles[k])
-                    }, this)
-                })
-
-            svgLineChart.append("text")
-                .attr("x", width / 2)
-                .attr("y", height + 20)
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Year")
-                .attr("class", "x axis label");
-
-            svgLineChart.append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 0)
-                .attr("x", 0 - (height / 2))
-                .attr("dy", "1em")
-                .style("text-anchor", "middle")
-                .text("Clients")
-                .attr("class", "y axis label");
-
-            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
-            const yAxis = d3.axisLeft(y).ticks(5).tickFormat(d3.format(".2s"))
-            const xAxis = d3.axisBottom(x)
-            svgLineChart.append("g")
-                .attr("class", "axis y")
-                .attr("transform", "translate(" + margin.left + ", 0)")
-                .call(yAxis);
-            svgLineChart.append("g")
-                .attr("class", "axis x")
-                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
-                .call(xAxis);
-
-
-            var colorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
-            /* Code below relevant for annotations */
-            const annotations = [{
-                    note: {
-                        label: "Europe Launch"
-                    },
-                    className: "europe",
-                    subject: {
-                        y1: margin.top + 150,
-                        y2: height - margin.bottom
-                    },
-                    y: margin.top + 150,
-                    data: {
-                        x: "04/01/1989"
-                    } //position the x based on an x scale
-
-
-                }, {
-                    note: {
-                        label: "Asia Launch"
-                    },
-                    className: "asia",
-                    subject: {
-                        y1: margin.top + 80,
-                        y2: height - margin.bottom
-                    },
-                    y: margin.top + 80,
-                    data: {
-                        x: "11/01/1991"
-                    }
-                }, {
-                    note: {
-                        label: "Africa Launch"
-                    },
-                    className: "africa",
-                    subject: {
-                        y1: margin.top + 90,
-                        y2: height - margin.bottom
-                    },
-                    y: margin.top + 90,
-                    data: {
-                        x: "10/23/2000"
-                    }
-                }, {
-                    note: {
-                        label: "Oceania Launch"
-                    },
-                    className: "oceania",
-                    subject: {
-                        y1: margin.top + 30,
-                        y2: height - margin.bottom
-                    },
-                    y: margin.top + 30,
-                    data: {
-                        x: "10/23/2010"
-                    }
-                }, {
-                    note: {
-                        label: "Recession",
-                        lineType: "none",
-                        orientation: "leftRight",
-                        "align": "middle"
-                    },
-                    className: "anomaly",
-                    type: d3.annotationCalloutCircle,
-                    subject: {
-                        radius: 25
-                    },
-                    data: {
-                        x: "6/21/2007",
-                        y: 61000
-                    },
-                    dx: 40,
-                    y: margin.top + 150
-                }, {
-                    note: {
-                        label: "0.2M clients",
-                        wrap: 100,
-                    },
-                    className: "above",
-                    disable: ["connector"],
-                    subject: {
-                        x1: x(new Date('02/1/2013')),
-                        x2: x(new Date('8/1/2014'))
-                    },
-                    x: x(new Date('10/1/2014')),
-                    dx: 50,
-                    data: {
-                        y: 200000
-                    }
-                }
-
-            ]
-            const type = d3.annotationCustomType(
-                d3.annotationXYThreshold, {
-                    "note": {
-                        "lineType": "none",
-                        "orientation": "top",
-                        "align": "middle"
-
-                    }
-                }
-            )
-
-            const makeAnnotations = d3.annotation()
-                .type(type)
-                .accessors({
-                    x: function(d) {
-                        return x(new Date(d.x))
-                    },
-                    y: function(d) {
-                        return y(d.y)
-                    }
-                })
-                .annotations(annotations)
-                .textWrap(20)
-
-
-
-            svgLineChart
-                .append("g")
-                .call(makeAnnotations);
-
-
+        reloadJourney()
+        d3.select("#complex").on("click", function() {
+            reloadJourney()
         });
 
-        //----Divided line code  ----
-        //https://bl.ocks.org/emeeks/03396c05b39b8198685f3e46942c87e3
+        function reloadJourney() {
+            d3.select("#journeyChildDiv").selectAll("*").remove();
+            d3.csv("assets/data/acct_count.csv", function(error, csv) {
+                if (error) throw error;
+
+                const journeyX = d3.scaleTime().range([journeyMargin.left, width - journeyMargin.right])
+                    .domain([new Date('01/01/1981'), new Date('1/1/2020')])
+                const journeyY = d3.scaleLinear().range([height - journeyMargin.bottom, journeyMargin.top])
+                    .domain([4731, 260457])
+
+                var journeyLine = d3.line()
+                    .x(function(d) {
+                        return journeyX(new Date(d.Date))
+                    })
+                    .y(function(d) {
+                        return journeyY(d.Close)
+                    })
+
+                var dLineData = dividedLine(parameters, csv, 20);
+
+                const svgJourneyChart = d3.select("#journeyChildDiv")
+                    .append("svg")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .attr("position", "relative");
+
+                svgJourneyChart.append('g')
+                    .attr('class', 'lineChart')
+
+                svgJourneyChart.select("g.lineChart")
+                    .selectAll("path.segment")
+                    .data(dLineData)
+                    .enter()
+                    .append("path")
+                    .transition()
+                    .duration(1000)
+                    .delay(function(d, i) {
+                        return i * 200;
+                    })
+                    .attr("d", function(d) {
+                        return journeyLine(d.points)
+                    })
+                    .each(function(d) {
+                        const styles = styleMap[d.key]
+                        Object.keys(styles).forEach(function(k) {
+                            d3.select(this)
+                                .style(k, styles[k])
+                        }, this)
+                    });
+
+                svgJourneyChart.append("text")
+                    .attr("x", width / 2)
+                    .attr("y", height + 20)
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Year")
+                    .attr("class", "x axis label");
+
+                svgJourneyChart.append("text")
+                    .attr("transform", "rotate(-90)")
+                    .attr("y", 0)
+                    .attr("x", 0 - (height / 2))
+                    .attr("dy", "1em")
+                    .style("text-anchor", "middle")
+                    .text("Clients")
+                    .attr("class", "y axis label");
+
+                var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+                const yAxis = d3.axisLeft(journeyY).ticks(5).tickFormat(d3.format(".2s"))
+                const xAxis = d3.axisBottom(journeyX)
+                svgJourneyChart.append("g")
+                    .attr("class", "axis y")
+                    .attr("transform", "translate(" + journeyMargin.left + ", 0)")
+                    .call(yAxis);
+                svgJourneyChart.append("g")
+                    .attr("class", "axis x")
+                    .attr("transform", "translate(0," + (height - journeyMargin.bottom) + ")")
+                    .call(xAxis);
+
+
+                var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+                /* Code below relevant for annotations */
+                const annotations = [{
+                        note: {
+                            label: "Europe Launch"
+                        },
+                        className: "europe",
+                        subject: {
+                            y1: journeyMargin.top + 150,
+                            y2: height - journeyMargin.bottom
+                        },
+                        y: journeyMargin.top + 150,
+                        data: {
+                            x: "04/01/1989"
+                        } //position the x based on an x scale
+
+
+                    }, {
+                        note: {
+                            label: "Asia Launch"
+                        },
+                        className: "asia",
+                        subject: {
+                            y1: journeyMargin.top + 80,
+                            y2: height - journeyMargin.bottom
+                        },
+                        y: journeyMargin.top + 80,
+                        data: {
+                            x: "11/01/1991"
+                        }
+                    }, {
+                        note: {
+                            label: "Africa Launch"
+                        },
+                        className: "africa",
+                        subject: {
+                            y1: journeyMargin.top + 90,
+                            y2: height - journeyMargin.bottom
+                        },
+                        y: journeyMargin.top + 90,
+                        data: {
+                            x: "10/23/2000"
+                        }
+                    }, {
+                        note: {
+                            label: "Oceania Launch"
+                        },
+                        className: "oceania",
+                        subject: {
+                            y1: journeyMargin.top + 30,
+                            y2: height - journeyMargin.bottom
+                        },
+                        y: journeyMargin.top + 30,
+                        data: {
+                            x: "10/23/2010"
+                        }
+                    }, {
+                        note: {
+                            label: "Recession",
+                            lineType: "none",
+                            orientation: "leftRight",
+                            "align": "middle"
+                        },
+                        className: "anomaly",
+                        type: d3.annotationCalloutCircle,
+                        subject: {
+                            radius: 25
+                        },
+                        data: {
+                            x: "6/21/2007",
+                            y: 61000
+                        },
+                        dx: 40,
+                        y: journeyMargin.top + 200
+                    }, {
+                        note: {
+                            label: "0.2M clients",
+                            wrap: 100,
+                        },
+                        className: "above",
+                        disable: ["connector"],
+                        subject: {
+                            x1: journeyX(new Date('02/1/2013')),
+                            x2: journeyX(new Date('8/1/2014'))
+                        },
+                        x: journeyX(new Date('10/1/2014')),
+                        dx: 50,
+                        data: {
+                            y: 200000
+                        }
+                    }
+
+                ]
+                const type = d3.annotationCustomType(
+                    d3.annotationXYThreshold, {
+                        "note": {
+                            "lineType": "none",
+                            "orientation": "top",
+                            "align": "middle"
+
+                        }
+                    }
+                )
+
+                const makeAnnotations = d3.annotation()
+                    .type(type)
+                    .accessors({
+                        x: function(d) {
+                            return journeyX(new Date(d.x))
+                        },
+                        y: function(d) {
+                            return journeyY(d.y)
+                        }
+                    })
+                    .annotations(annotations)
+                    .textWrap(20);
+
+                svgJourneyChart
+                    .append("g")
+                    .call(makeAnnotations);
+
+            });
+        };
+
         const dividedLine = (parameters, points, searchIterations) => {
             let currentParameters = parameters(points[0], 0)
             let currentPointsArray = []
@@ -259,7 +267,7 @@ Section 3 html
 
                     for (let x = 0; x < searchIterations; x++) {
                         const keys = Object.keys(pointA)
-                        const findPoints = simpleSearchFunction(pointA, pointB, currentParameters, parameters, keys)
+                        const findPoints = journeySearchFunction(pointA, pointB, currentParameters, parameters, keys)
                         pointA = findPoints[0]
                         pointB = findPoints[1]
                     }
@@ -275,7 +283,7 @@ Section 3 html
             return dividedLinesData
         }
 
-        function simpleSearchFunction(pointA, pointB, current, parameters, keys) {
+        function journeySearchFunction(pointA, pointB, current, parameters, keys) {
             const betweenPoint = {};
             keys.forEach(key => {
                 betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
@@ -297,6 +305,19 @@ Section 3 html
             }
             return "normal"
         }
+        d3.select('.annotations')
+            .transition()
+            .duration(4000)
+            .tween('updateAnno', function(d) {
+                xTrans = d3.interpolateNumber(0, 200)
+                timeTrans = d3.interpolateDate(new Date("January 01, 1989 00:00:00"), new Date(new Date("January 01, 2020 00:00:00").getTime() + 200 * 60000))
+                return function(t) {
+                    annotations[0].x = x(xTrans(t));
+                    annotations[0].note.label = d3.timeFormat("%H:%M")(timeTrans(t))
+                    makeAnnotations.annotations(annotations)
+                    makeAnnotations.update()
+                }
+            });
 
         var styleMap = {
             before: {

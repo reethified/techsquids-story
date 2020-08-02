@@ -19,19 +19,20 @@
             <center>
                 <h1 class="h1Top">Diary of Techsquids Journey</h1>
 
-                <img src="./assets/overview.svg" /></div>
+                <img src="./assets/overview.svg" />
+        </div>
         </center>
         <div class="tabs">
             <div role="tablist" aria-label="Entertainment">
                 <button role="tab" aria-selected="true" aria-controls="complexcomplex" id="nils">
-      1
-    </button>
+                    1
+                </button>
                 <button role="tab" aria-selected="false" aria-controls="journey-tab" id="journey" tabindex="-2">
-      2
-    </button>
+                    2
+                </button>
                 <button role="tab" aria-selected="false" aria-controls="nils-tab" id="complex" tabindex="-3">
-        3
-      </button>
+                    3
+                </button>
             </div>
             <div tabindex="0" role="tabpanel" id="complexcomplex" aria-labelledby="nils">
 
@@ -50,15 +51,24 @@
                             </td>
                             <td rowspan=2 style="width: 40%; font-size: 14px; padding-top: 10%;">
                                 <ul class="timeline">
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9 Millions clients worldwide (Active+Cancel)</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5 continents & 103 countries in 40 years</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1980 in Americas</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1989 in Europe</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1998 in Asia</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2011 in Africa</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in Oceania</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Grwoth in Africa is lower comparedto Oceania</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth of US$40 M in 2020</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9
+                                            Millions clients worldwide (Active+Cancel)</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5
+                                            continents & 103 countries in 40 years</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1980 in
+                                            Americas</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1989 in
+                                            Europe</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1998 in
+                                            Asia</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2011 in
+                                            Africa</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in
+                                            Oceania</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Grwoth in Africa
+                                            is lower comparedto Oceania</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth
+                                            of US$40 M in 2020</span></li>
                                 </ul>
 
                             </td>
@@ -109,9 +119,7 @@
                     <h4 style="color: rgb(102, 100, 100)">Active Clients Journey</h4>
                 </center>
 
-                <iframe id="iframe1" src="journey.html" style="border: none; padding: 0; width: 610px; height: 430px"></iframe>
-
-
+                <div id="journeyChildDiv"></div>
             </div>
 
         </div>
@@ -126,8 +134,9 @@
     <!-- Section 1-->
 
     <script>
-        //Regions Bar chart
-
+        // set the dimensions and margins of the graph
+        var width = 600
+        var height = 400
         var continents = ["Africa", "Europe", "Oceania", "Asia", "Americas"];
 
         // Color palette for continents?
@@ -141,143 +150,125 @@
                 left: 20
             },
             marginRegionWidth = 300 - marginRegionBar.left - marginRegionBar.right,
-            marginRegionHight = 400 - marginRegionBar.top - marginRegionBar.bottom;
-
-        var barColor = d3.interpolateInferno(0.4);
-        var highlightColor = d3.interpolateInferno(0.3);
-
-        var formatPercent = d3.format(".2s");
-
-        var svgBar = d3.select("#regionsGraphDiv").append("svg")
-            .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
-            .attr("height", marginRegionHight + marginRegionBar.top + marginRegionBar.bottom)
-            .append("g")
-            .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
-
-        var xBar = d3.scaleBand()
-            .domain(continents)
-            .range([0, marginRegionWidth])
-            .padding(0.4);
-
-        var yBar = d3.scaleLinear()
-            .range([marginRegionHight, 0]);
-
-        var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
-        var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
+            marginRegionHight = 300 - marginRegionBar.top - marginRegionBar.bottom;
 
 
-        // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
-        yBar.domain([0, 600000]);
-
-        svgBar.append("g")
-            .attr("class", "x axis")
-            .attr("transform", "translate(0," + marginRegionHight + ")")
-            .call(xAxisBar)
-            .selectAll("text")
-            .attr("y", 10)
-            .attr("x", 1)
-            .attr("dy", ".25em")
-            .attr("transform", "rotate(15)")
-            .style("text-anchor", "start")
-            .style("font-color", "rgb(102, 100, 100)");
-
-        svgBar.append("g")
-            .attr("class", "y axis")
-            .call(yBar);
 
         d3.csv("./assets/data/regions.csv", function(data) {
 
-            svgBar.selectAll(".bar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("class", "bar")
-                .style("display", d => {
-                    return d.value;
-                })
-                .style("fill", d => {
-                    return color(d.region)
-                })
-                .attr("x", d => {
-                    return xBar(d.region);
-                })
-                .style("opacity", "0.8")
-                .attr("width", xBar.bandwidth())
-                .attr("y", d => {
-                    return marginRegionHight;
-                })
-                .attr("height", 0)
-                .transition()
-                .duration(1000)
-                .delay(function(d, i) {
-                    return i * 200;
-                })
-                .attr("y", d => {
-                    return yBar(d.value);
-                })
-                .attr("height", d => {
-                    return marginRegionHight - yBar(d.value);
-                });
+                var svgBar = d3.select("#regionsGraphDiv").append("svg")
+                    .attr("width", marginRegionWidth + marginRegionBar.left + marginRegionBar.right)
+                    .attr("height", marginRegionHight + marginRegionBar.top + marginRegionBar.bottom)
+                    .append("g")
+                    .attr("transform", "translate(" + marginRegionBar.left + "," + marginRegionBar.top + ")");
 
-            svgBar.selectAll(".label")
-                .data(data)
-                .enter()
-                .append("text")
-                .attr("class", "label")
-                .style("display", d => {
-                    return d.value;
-                })
-                .style("font-size", "12px")
-                .attr("x", (d => {
-                    return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
-                }))
-                .style("fill", d => {
-                    return color(d.region)
-                })
-                .attr("y", d => {
-                    return marginRegionHight;
-                })
+                var xBar = d3.scaleBand()
+                    .domain(continents)
+                    .range([0, marginRegionWidth])
+                    .padding(0.4);
+
+                var yBar = d3.scaleLinear()
+                    .range([marginRegionHight, 0]);
+
+                var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
+                var yAxisBar = d3.axisLeft(yBar).tickFormat(d3.format(".2s"));
+
+                svgBar.append("g")
+                    .attr("class", "x axis")
+                    .attr("transform", "translate(0," + marginRegionHight + ")")
+                    .call(xAxisBar)
+                    .selectAll("text")
+                    .attr("y", 10)
+                    .attr("x", 1)
+                    .attr("dy", ".25em")
+                    .attr("transform", "rotate(15)")
+                    .style("text-anchor", "start")
+                    .style("font-color", "rgb(102, 100, 100)");
+                svgBar.append("g")
+                    .attr("class", "y axis")
+                    .call(yBar);
+                // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
+                yBar.domain([0, 600000]);
+                svgBar.selectAll(".bar")
+                    .data(data)
+                    .enter()
+                    .append("rect")
+                    .attr("class", "bar")
+                    .style("display", d => {
+                        return d.value;
+                    })
+                    .style("fill", d => {
+                        return color(d.region)
+                    })
+                    .attr("x", d => {
+                        return xBar(d.region);
+                    })
+                    .style("opacity", "0.8")
+                    .attr("width", xBar.bandwidth())
+                    .attr("y", d => {
+                        return marginRegionHight;
+                    })
+                    .attr("height", 0)
+                    .transition()
+                    .duration(1000)
+                    .delay(function(d, i) {
+                        return i * 200;
+                    })
+                    .attr("y", d => {
+                        return yBar(d.value);
+                    })
+                    .attr("height", d => {
+                        return marginRegionHight - yBar(d.value);
+                    });
+
+                svgBar.selectAll(".label")
+                    .data(data)
+                    .enter()
+                    .append("text")
+                    .attr("class", "label")
+                    .style("display", d => {
+                        return d.value;
+                    })
+                    .style("font-size", "12px")
+                    .attr("x", (d => {
+                        return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
+                    }))
+            })
+            .attr("y", d => {
+                return marginRegionHight;
+            })
+            .style("fill", d => {
+                return color(d.region)
+
                 .attr("height", 0)
-                .transition()
-                .duration(750)
-                .delay((d, i) => {
-                    return i * 150;
-                })
-                .text(d => {
-                    return formatPercent(d.value);
-                })
-                .attr("y", d => {
-                    return yBar(d.value);
-                })
-                .attr("dy", "-.7em");
-        });
+                    .transition()
+                    .duration(750)
+                    .delay((d, i) => {
+                        return i * 150;
+                    })
+                    .text(d => {
+                        return formatPercent(d.value);
+                    })
+                    .attr("y", d => {
+                        return yBar(d.value);
+                    })
+                    .attr("dy", "-.7em");
+            });
     </script>
 
-    <!-- Section 2 script-->
+    <!-- Scene 1 Section 2: script-->
 
     <script>
-        // set the dimensions and margins of the graph
-        var width = 600
-        var height = 400
-
-        // append the svg object to the body of the page
-        var svg = d3.select("#countryBubbleGraphDiv")
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height)
-            .attr("position", "relative")
-
-
-        var size = d3.scaleLinear()
-            .domain([11, 246000])
-            .range([7, 55]);
-
-
-
-
         // Read data
         d3.csv("./assets/data/region-ctry.csv", function(data) {
-
+            var ctryBubbleChartSvg = d3.select("#countryBubbleGraphDiv")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("position", "relative")
+            var size = d3.scaleLinear()
+                .domain([11, 246000])
+                .range([7, 55]);
             var Tooltip = d3.select("#ttText")
 
             var mouseover = function(d) {
@@ -297,7 +288,7 @@
             }
 
             // Initialize the circle: all located at the center of the svg area
-            var node = svg.append("g")
+            var node = ctryBubbleChartSvg.append("g")
                 .selectAll("circle")
                 .data(data)
                 .enter()
@@ -385,11 +376,302 @@
         });
     </script>
 
-    <!-- Section 3 is rendered using the iframe 
-        journey.html
+    <!-- Slide 2 :
+        journey
      -->
-    <!-- Section 4 is rendered using the iframe 
-        accountStatus.html
+
+
+    <script>
+        const margin = {
+            top: 50,
+            bottom: 50,
+            left: 50,
+            right: 50
+        }
+
+
+
+        d3.csv("assets/data/acct_count.csv", function(error, csv) {
+            if (error) throw error;
+
+            const journeyX = d3.scaleTime().range([margin.left, width - margin.right])
+                .domain([new Date('01/01/1981'), new Date('1/1/2020')])
+            const journeyY = d3.scaleLinear().range([height - margin.bottom, margin.top])
+                .domain([4731, 260457])
+
+            var journeyLine = d3.line()
+                .x(function(d) {
+                    return journeyX(new Date(d.Date))
+                })
+                .y(function(d) {
+                    return journeyY(d.Close)
+                })
+
+            /* --- creating line using divided line code --- */
+            var dLineData = dividedLine(parameters, csv, 20);
+
+            const svgJourneyChart = d3.select("#journeyChildDiv")
+                .append("svg")
+                .attr("width", width)
+                .attr("height", height)
+                .attr("position", "relative");
+
+            svgJourneyChart.append('g')
+                .attr('class', 'lineChart')
+
+            svgJourneyChart.select("g.lineChart")
+                .selectAll("path.segment")
+                .data(dLineData)
+                .enter()
+                .append("path")
+                .transition()
+                .duration(1000)
+                .delay(function(d, i) {
+                    return i * 500;
+                })
+                .attr("d", function(d) {
+                    return journeyLine(d.points)
+                })
+                .each(function(d) {
+                    const styles = styleMap[d.key]
+                    Object.keys(styles).forEach(function(k) {
+                        d3.select(this)
+                            .style(k, styles[k])
+                    }, this)
+                })
+
+            svgJourneyChart.append("text")
+                .attr("x", width / 2)
+                .attr("y", height + 20)
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Year")
+                .attr("class", "x axis label");
+
+            svgJourneyChart.append("text")
+                .attr("transform", "rotate(-90)")
+                .attr("y", 0)
+                .attr("x", 0 - (height / 2))
+                .attr("dy", "1em")
+                .style("text-anchor", "middle")
+                .text("Clients")
+                .attr("class", "y axis label");
+
+            var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+            const yAxis = d3.axisLeft(journeyY).ticks(5).tickFormat(d3.format(".2s"))
+            const xAxis = d3.axisBottom(journeyX)
+            svgJourneyChart.append("g")
+                .attr("class", "axis y")
+                .attr("transform", "translate(" + margin.left + ", 0)")
+                .call(yAxis);
+            svgJourneyChart.append("g")
+                .attr("class", "axis x")
+                .attr("transform", "translate(0," + (height - margin.bottom) + ")")
+                .call(xAxis);
+
+
+            var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+            /* Code below relevant for annotations */
+            const annotations = [{
+                    note: {
+                        label: "Europe Launch"
+                    },
+                    className: "europe",
+                    subject: {
+                        y1: margin.top + 150,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top + 150,
+                    data: {
+                        x: "04/01/1989"
+                    } //position the x based on an x scale
+
+
+                }, {
+                    note: {
+                        label: "Asia Launch"
+                    },
+                    className: "asia",
+                    subject: {
+                        y1: margin.top + 80,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top + 80,
+                    data: {
+                        x: "11/01/1991"
+                    }
+                }, {
+                    note: {
+                        label: "Africa Launch"
+                    },
+                    className: "africa",
+                    subject: {
+                        y1: margin.top + 90,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top + 90,
+                    data: {
+                        x: "10/23/2000"
+                    }
+                }, {
+                    note: {
+                        label: "Oceania Launch"
+                    },
+                    className: "oceania",
+                    subject: {
+                        y1: margin.top + 30,
+                        y2: height - margin.bottom
+                    },
+                    y: margin.top + 30,
+                    data: {
+                        x: "10/23/2010"
+                    }
+                }, {
+                    note: {
+                        label: "Recession",
+                        lineType: "none",
+                        orientation: "leftRight",
+                        "align": "middle"
+                    },
+                    className: "anomaly",
+                    type: d3.annotationCalloutCircle,
+                    subject: {
+                        radius: 25
+                    },
+                    data: {
+                        x: "6/21/2007",
+                        y: 61000
+                    },
+                    dx: 40,
+                    y: margin.top + 150
+                }, {
+                    note: {
+                        label: "0.2M clients",
+                        wrap: 100,
+                    },
+                    className: "above",
+                    disable: ["connector"],
+                    subject: {
+                        x1: journeyX(new Date('02/1/2013')),
+                        x2: journeyX(new Date('8/1/2014'))
+                    },
+                    x: journeyX(new Date('10/1/2014')),
+                    dx: 50,
+                    data: {
+                        y: 200000
+                    }
+                }
+
+            ]
+            const type = d3.annotationCustomType(
+                d3.annotationXYThreshold, {
+                    "note": {
+                        "lineType": "none",
+                        "orientation": "top",
+                        "align": "middle"
+
+                    }
+                }
+            )
+
+            const makeAnnotations = d3.annotation()
+                .type(type)
+                .accessors({
+                    x: function(d) {
+                        return journeyX(new Date(d.x))
+                    },
+                    y: function(d) {
+                        return journeyY(d.y)
+                    }
+                })
+                .annotations(annotations)
+                .textWrap(20)
+
+
+
+            svgJourneyChart
+                .append("g")
+                .call(makeAnnotations);
+
+
+        });
+
+        const dividedLine = (parameters, points, searchIterations) => {
+            let currentParameters = parameters(points[0], 0)
+            let currentPointsArray = []
+            let dividedLinesData = [{
+                key: currentParameters,
+                points: currentPointsArray
+            }]
+            points.forEach((point, pointI) => {
+
+                const newParameters = parameters(point, pointI)
+                let matchingParams = newParameters === currentParameters;
+
+                if (typeof currentParameters === "object") {
+                    matchingParams = JSON.stringify(newParameters) === JSON.stringify(currentParameters)
+                }
+
+                if (matchingParams) {
+                    currentPointsArray.push(point)
+                } else {
+                    const lastPoint = currentPointsArray[currentPointsArray.length - 1];
+                    let pointA = lastPoint;
+                    let pointB = point;
+
+                    for (let x = 0; x < searchIterations; x++) {
+                        const keys = Object.keys(pointA)
+                        const findPoints = journeySearchFunction(pointA, pointB, currentParameters, parameters, keys)
+                        pointA = findPoints[0]
+                        pointB = findPoints[1]
+                    }
+                    currentPointsArray.push(pointB)
+                    currentPointsArray = [pointB, point]
+                    dividedLinesData.push({
+                        key: newParameters,
+                        points: currentPointsArray
+                    })
+                    currentParameters = newParameters
+                }
+            })
+            return dividedLinesData
+        }
+
+        function journeySearchFunction(pointA, pointB, current, parameters, keys) {
+            const betweenPoint = {};
+            keys.forEach(key => {
+                betweenPoint[key] = typeof pointA[key] === "number" ? (pointA[key] + pointB[key]) / 2 : pointB[key]
+            })
+
+            if (JSON.stringify(parameters(betweenPoint)) === JSON.stringify(current)) {
+                return [betweenPoint, pointB]
+            }
+            return [pointA, betweenPoint]
+        }
+
+        function parameters(point) {
+            const steve = new Date("7/9/1997")
+            if (new Date(point.Date) < steve) {
+                return "before"
+            }
+            if (point.Close > 100) {
+                return "top"
+            }
+            return "normal"
+        }
+
+        var styleMap = {
+            before: {
+                "stroke-dasharray": '1, 2'
+            },
+            top: {
+                "stroke": "#00BFA5"
+            },
+            normal: {}
+        }
+    </script>
+
+    <!-- Slide 3 Section 4: Account Status
      -->
     <script>
         // Set the accountStatusMargins
@@ -641,6 +923,8 @@
             normal: {}
         }
     </script>
+
+
     <!-- partial -->
     <script src="./assets/tabs.js"></script>
 
