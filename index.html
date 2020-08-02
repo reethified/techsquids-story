@@ -47,14 +47,16 @@
                                 </center>
 
                             </td>
-                            <td rowspan=2 style="width: 40%; font-size: 14px; padding-top: 10%;">
+                            <td rowspan=2 style="font-size: 14px; position: top;">
                                 <ul class="timeline">
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9
                                             Million clients worldwide (Active+Cancel)</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5
                                             continents & 103 countries in 40 years</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">50% of the client base is from Americas</span></li>
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">USA has maxium clients and EGYPT has minimum</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">50% of the
+                                            client base is from Americas</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">USA has maxium
+                                            clients and EGYPT has minimum</span></li>
                                     <li><span></span></li>
                                 </ul>
                             </td>
@@ -63,23 +65,35 @@
 
                         <tr>
                             <td>
-                                <center>
 
+                                <div class="containerCustom">
+
+                                    <button disabled id="continentBarBtn" style="font-size: 13px; padding-top:5px;" onclick="countryClientBubbleChart('none','true')">Click Continent bar</button>
+                                </div>
+                                <center>
                                     <div id="countryBubbleGraphDiv" class="fixedDiv">
                                         <svg id="ctryBubbleGraphSvg" width=600 height=400></svg>
                                     </div>
 
                                     <p class="pGraphLabel">Clients by country</p>
-
                                 </center>
+
 
 
             </div>
             </br>
             </br>
             <div class="containerCustom">
-                <p>Country:</p>
-                <p id="ttText">Not Selected</p>
+                <div class="child">
+                    <p>Country:</p>
+                </div>
+
+                <div class="child">
+                    <p id="ttText">
+                        Mouseover on bubble
+                    </p>
+                </div>
+
             </div>
             </td>
             </tr>
@@ -101,23 +115,23 @@
                     <td style="width: 40%; font-size: 14px; padding-top: 10%;">
                         <ul class="timeline">
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9
-                            Millions clients worldwide (Active+Cancel)</span></li>
+                                    Millions clients worldwide (Active+Cancel)</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5
-                            continents & 103 countries in 40 years</span></li>
+                                    continents & 103 countries in 40 years</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1980 in
-                            Americas</span></li>
+                                    Americas</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1989 in
-                            Europe</span></li>
+                                    Europe</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1998 in
-                            Asia</span></li>
+                                    Asia</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2011 in
-                            Africa</span></li>
+                                    Africa</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in
-                            Oceania</span></li>
+                                    Oceania</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Grwoth in Africa
-                            is lower comparedto Oceania</span></li>
+                                    is lower comparedto Oceania</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth
-                            of US$40 M in 2020</span></li>
+                                    of US$40 M in 2020</span></li>
                         </ul>
 
                     </td>
@@ -133,7 +147,9 @@
             <table>
                 <tr>
                     <td>
-                        <div id="industryDropdown" style="font-size: 15px;">Industry:</div>
+                        <div id="industryDropdown" class="containerCustom">
+                            <p>Industry:</p>
+                        </div>
 
                     </td>
                     <td rowspan=2 style="width: 40%; font-size: 14px; padding-top: 10%;">
@@ -173,7 +189,6 @@
 
     </div>
     </div>
-
 
     <center>
         <div style="padding-bottom: 30; padding-top: 20px;">By- Rahul Sharma</div>
@@ -244,9 +259,10 @@
                 .data(data)
                 .enter()
                 .append("rect")
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     console.log(d);
                     countryClientBubbleChart(d.region);
+                    d3.select("#continentBarBtn").text("Reset selection").attr("disabled", null);
                 })
                 .attr("class", "bar")
                 .style("display", d => {
@@ -313,9 +329,9 @@
     <!-- Scene 1 Section 2: script-->
 
     <script>
-        countryClientBubbleChart('none');
+        countryClientBubbleChart('none', "false");
         // Read data
-        function countryClientBubbleChart(continent) {
+        function countryClientBubbleChart(continent, buttonReset) {
             d3.select("#ctryBubbleGraphSvg").selectAll("*").remove();
             d3.csv("./assets/data/region-ctry.csv", function(data) {
 
@@ -325,16 +341,13 @@
 
                 var ctryBubbleChartSvg = d3.select("#ctryBubbleGraphSvg");
 
-                /*              ctryBubbleChartSvg = ctryBubbleChartSvg
-                    .append("svg")
-                    .attr("width", width)
-                    .attr("height", height)
-                    .attr("position", "relative");
-*/
                 if (continent != "none") {
                     data = data.filter(function(row) {
                         return row.region == continent;
                     })
+                }
+                if (buttonReset == 'true') {
+                    d3.select("#continentBarBtn").text("Click Continent bar").attr("disabled", "");
                 }
                 var max = d3.max(data, function(d) {
                     return d.value;
@@ -350,17 +363,14 @@
                         .style("opacity", 0.8)
                 }
                 var mousemove = function(d) {
-                    //Tooltip  .html('<font color="' + color(d.region) + '" ><u>' + d.key + '</u> :' + d.value + " clients</font>")
-                    // recover coordinate we need
+                    Tooltip.html('<font color="' + color(d.region) + '">' + d.key + ' : ' + d.value + " clients</font>")
 
 
                 }
                 var mouseleave = function(d) {
-                    Tooltip
-                        .style("opacity", 0)
+                    Tooltip.html("<font>Mouseover on bubble</font>")
                 }
 
-                /
                 // Initialize the circle: all located at the center of the svg area
                 var node = ctryBubbleChartSvg.append("g")
                     .selectAll("circle")
@@ -385,7 +395,8 @@
                     .call(d3.drag()
                         .on("start", dragstarted)
                         .on("drag", dragged)
-                        .on("end", dragended));
+                        .on("end", dragended))
+
 
                 // Features of the forces applied to the nodes:
                 var simulation = d3.forceSimulation()

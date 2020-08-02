@@ -192,6 +192,34 @@ a {
 
 /* ========================================================================== Tables ========================================================================== */
 
+.containerCustom {
+    border-top: solid;
+    border-bottom: solid;
+    border-width: 0.6px;
+    padding-bottom: 5px;
+    padding-inline-end: 5px;
+    padding-top: 5px;
+    padding-left: 10px;
+    display: inline-block;
+    position: relative;
+}
+
+.containerCustom .child {
+    clear: both;
+}
+
+.containerCustom p {
+    font-size: 14px;
+    float: left;
+    padding-right: 10px;
+}
+
+.containerCustom select {
+    font-size: 13px;
+    float: left;
+    padding-right: 10px;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
@@ -942,20 +970,6 @@ path {
 .pGraphLabel {
     color: rgb(102, 100, 100);
     font-size: 15px;
-}
-
-.containerCustom {
-    border-style: solid;
-    border-width: 0.6px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-left: 10px;
-    display: inline-block;
-    width: 400px;
-}
-
-.containerCustom p {
-    font-size: 13px;
 }
 
 .border-25 {
