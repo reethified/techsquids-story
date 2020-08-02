@@ -25,14 +25,11 @@
                 <button role="tab" aria-selected="true" aria-controls="complexcomplex" id="nils">
       1
     </button>
-                <button role="tab" aria-selected="false" aria-controls="agnes-tab" id="agnes" tabindex="-1">
+                <button role="tab" aria-selected="false" aria-controls="journey-tab" id="journey" tabindex="-2">
       2
     </button>
-                <button role="tab" aria-selected="false" aria-controls="journey-tab" id="journey" tabindex="-2">
-      3
-    </button>
                 <button role="tab" aria-selected="false" aria-controls="nils-tab" id="complex" tabindex="-3">
-        4
+        3
       </button>
             </div>
             <div tabindex="0" role="tabpanel" id="complexcomplex" aria-labelledby="nils">
@@ -50,9 +47,8 @@
                                 </center>
 
                             </td>
-                            <td style="width: 40%; font-size: 14px; padding-top: 10%;">
+                            <td rowspan=2 style="width: 40%; font-size: 14px; padding-top: 10%;">
                                 <ul class="timeline">
-                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth of US$40 M in 2020</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Served 0.9 Millions clients worldwide (Active+Cancel)</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Expansion in 5 continents & 103 countries in 40 years</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Since 1980 in Americas</span></li>
@@ -61,55 +57,31 @@
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2011 in Africa</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in Oceania</span></li>
                                     <li><span class="badge badge-primary badge-pill font-weight-normal">Grwoth in Africa is lower comparedto Oceania</span></li>
+                                    <li><span class="badge badge-primary badge-pill font-weight-normal">Estimated worth of US$40 M in 2020</span></li>
                                 </ul>
 
                             </td>
 
                         </tr>
 
-                    </tbody>
-                </table>
-
-            </div>
-
-            <div tabindex="1" role="tabpanel" id="agnes-tab" aria-labelledby="agnes" hidden="">
-                <center>
-                    <h4 style="color: rgb(102, 100, 100)">Worldwide Clients: Country view</h4>
-                </center>
-                <table>
-                    <tbody>
                         <tr>
-                            <td style="width: 100%;">
+                            <td>
+
+                                <center>
+                                    <div id="countryBubbleGraphDiv" style="width: 100%;"></div>
+                                </center>
                                 <div id="ttText" style="opacity: 1; font-size: 15px; background-color: white; width: 300x; padding: 1px; left: 1px; top: 217px;" class="tooltip">
 
                                     <p style="color: rgb(102, 100, 100); font-size: 15px;">[ Explore Clients/country by mouseover and drag bubbles ]</p>
 
                                 </div>
-                                <center>
-                                    <div id="countryBubbleGraphDiv" style="width: 100%;"></div>
-                                </center>
                             </td>
-                            <td>
-                            </td>
-
                         </tr>
-                        <tr>
-                            <td colspan="2">
-                                <center>
-                                    <div style="height: 20px; width: 400px; padding-top: 10px;">
-                                        <svg id="continentsSvg" width="400px" hight="20px">
-                                        <g id="wrapper" style="opacity: 1; font-size: 15px; background-color: white; width: 250px; padding: 1px; left: 1px; top: 217px;right:5px;" transform="translate(0, 15)"></g>
-                                    </svg>
-                                    </div>
-                                </center>
 
-                            </td>
-
-                        </tr>
                     </tbody>
                 </table>
-            </div>
 
+            </div>
 
             <div tabindex="2" role="tabpanel" id="nils-tab" aria-labelledby="complex" hidden="">
                 <center>
@@ -186,23 +158,6 @@
         var xAxisBar = d3.axisBottom(xBar).tickPadding(4);
         var yAxisBar = d3.axisLeft(yBar).tickFormat(formatPercent);
 
-        var datasetBarChart = [{
-            "region": "Africa",
-            "value": 5893
-        }, {
-            "region": "Europe",
-            "value": 73446
-        }, {
-            "region": "Oceania",
-            "value": 113489
-        }, {
-            "region": "Asia",
-            "value": 365937
-        }, {
-            "region": "Americas",
-            "value": 565074
-        }];
-
 
         // y.domain([0, d3.max(dataset,  d => { return d.value; })]);
         yBar.domain([0, 600000]);
@@ -223,68 +178,72 @@
             .attr("class", "y axis")
             .call(yBar);
 
-        svgBar.selectAll(".bar")
-            .data(datasetBarChart)
-            .enter().append("rect")
-            .attr("class", "bar")
-            .style("display", d => {
-                return d.value;
-            })
-            .style("fill", d => {
-                return color(d.region)
-            })
-            .attr("x", d => {
-                return xBar(d.region);
-            })
-            .style("opacity", "0.8")
-            .attr("width", xBar.bandwidth())
-            .attr("y", d => {
-                return marginRegionHight;
-            })
-            .attr("height", 0)
-            .transition()
-            .duration(1000)
-            .delay(function(d, i) {
-                return i * 200;
-            })
-            .attr("y", d => {
-                return yBar(d.value);
-            })
-            .attr("height", d => {
-                return marginRegionHight - yBar(d.value);
-            });
+        d3.csv("./assets/data/regions.csv", function(data) {
 
-        svgBar.selectAll(".label")
-            .data(datasetBarChart)
-            .enter()
-            .append("text")
-            .attr("class", "label")
-            .style("display", d => {
-                return d.value;
-            })
-            .style("font-size", "12px")
-            .attr("x", (d => {
-                return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
-            }))
-            .style("fill", d => {
-                return color(d.region)
-            })
-            .attr("y", d => {
-                return marginRegionHight;
-            })
-            .attr("height", 0)
-            .transition()
-            .duration(750)
-            .delay((d, i) => {
-                return i * 150;
-            })
-            .text(d => {
-                return formatPercent(d.value);
-            })
-            .attr("y", d => {
-                return yBar(d.value);
-            })
-            .attr("dy", "-.7em");
+            svgBar.selectAll(".bar")
+                .data(data)
+                .enter()
+                .append("rect")
+                .attr("class", "bar")
+                .style("display", d => {
+                    return d.value;
+                })
+                .style("fill", d => {
+                    return color(d.region)
+                })
+                .attr("x", d => {
+                    return xBar(d.region);
+                })
+                .style("opacity", "0.8")
+                .attr("width", xBar.bandwidth())
+                .attr("y", d => {
+                    return marginRegionHight;
+                })
+                .attr("height", 0)
+                .transition()
+                .duration(1000)
+                .delay(function(d, i) {
+                    return i * 200;
+                })
+                .attr("y", d => {
+                    return yBar(d.value);
+                })
+                .attr("height", d => {
+                    return marginRegionHight - yBar(d.value);
+                });
+
+            svgBar.selectAll(".label")
+                .data(data)
+                .enter()
+                .append("text")
+                .attr("class", "label")
+                .style("display", d => {
+                    return d.value;
+                })
+                .style("font-size", "12px")
+                .attr("x", (d => {
+                    return xBar(d.region) + (xBar.bandwidth() / 2) - 8;
+                }))
+                .style("fill", d => {
+                    return color(d.region)
+                })
+                .attr("y", d => {
+                    return marginRegionHight;
+                })
+                .attr("height", 0)
+                .transition()
+                .duration(750)
+                .delay((d, i) => {
+                    return i * 150;
+                })
+                .text(d => {
+                    return formatPercent(d.value);
+                })
+                .attr("y", d => {
+                    return yBar(d.value);
+                })
+                .attr("dy", "-.7em");
+        });
     </script>
 
     <!-- Section 2 script-->
@@ -311,7 +270,6 @@
 
         // Read data
         d3.csv("./assets/data/region-ctry.csv", function(data) {
-
 
             var Tooltip = d3.select("#ttText")
                 .style("opacity", 1)

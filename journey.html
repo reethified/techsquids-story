@@ -1,104 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!--
+
+Section 3 html
+
+-->
+
 <head>
     <meta charset="utf-8">
     <link href='https://fonts.googleapis.com/css?family=Lato:300,900' rel='stylesheet' type='text/css'>
+    <!-- <link rel="stylesheet" href="./assets/section3.css">-->
+    <link rel="stylesheet" href="./assets/main.css">
 
-    <style>
-        body {
-            background-color: white;
-        }
-        
-         :root {
-            --line-chart-color: #607D8B;
-            --annotation-context-color: #00796B;
-            --annotation-above-color: #00BFA5;
-            --annotation-anomaly-color: #E8336D;
-            --annotation-america-color: #FE9733;
-            --annotation-asia-color: #AB70B5;
-            --annotation-oceania-color: #6FBE6E;
-            --annotation-europe-color: #377EB8;
-            --annotation-africa-color: rgb(228, 26, 28);
-        }
-        
-        svg {
-            background-color: white;
-            font-size: 13px;
-        }
-        
-        .axis,
-        .axis text {
-            fill: var(--line-chart-color);
-        }
-        
-        .axis line,
-        path {
-            stroke: var(--line-chart-color);
-        }
-        
-        path {
-            fill: none;
-        }
-        
-        .annotation path {
-            stroke: var(--annotation-context-color);
-        }
-        
-        .annotation:not(.above):not(.anomaly) path {
-            stroke-dasharray: 1, 3;
-        }
-        
-        .annotation text {
-            fill: var(--annotation-context-color);
-        }
-        
-        .annotation.europe text {
-            fill: var(--annotation-europe-color);
-        }
-        
-        .annotation.africa text {
-            fill: var(--annotation-africa-color);
-        }
-        
-        .annotation.oceania text {
-            fill: var(--annotation-oceania-color);
-        }
-        
-        .annotation.asia text {
-            fill: var(--annotation-asia-color);
-        }
-        
-        .annotation.above path {
-            stroke: var(--annotation-above-color);
-        }
-        
-        .annotation.above text {
-            fill: var(--annotation-above-color);
-        }
-        
-        .annotation.anomaly path {
-            stroke: var(--annotation-anomaly-color);
-            stroke-width: 2px;
-        }
-        
-        .annotation.anomaly text {
-            fill: var(--annotation-anomaly-color);
-        }
-        
-        .annotation-note-bg {
-            fill: rgba(0, 0, 0, 0);
-        }
-        
-        .annotation-note-title {
-            font-weight: bold;
-        }
-        
-        text.title {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-    </style>
     <script src="https://d3js.org/d3.v4.js"></script>
     <script src="https://cdn.rawgit.com/susielu/d3-annotation/75ff6169/d3-annotation.js"></script>
 
@@ -123,7 +37,7 @@
         const y = d3.scaleLinear().range([height - margin.bottom, margin.top])
             .domain([4731, 260457])
 
-        d3.csv("assets/data/acct_count-1.csv", function(error, json) {
+        d3.csv("assets/data/acct_count.csv", function(error, json) {
             if (error) throw error;
 
             var line = d3.line()
