@@ -472,10 +472,23 @@
             reloadJourney()
         });
 
-        function reloadJourney() {
+        async function reloadJourney() {
             d3.select("#journeyChildDiv").selectAll("*").remove();
-            d3.csv("assets/data/acct_count.csv", function(error, csv) {
+            const resp = await d3.csv("assets/data/acct_count.csv", function(error, csv) {
                 if (error) throw error;
+
+                // Format the data
+                csv.forEach(function(d) {
+                    d.Date = parseYear(d.Date);
+                    d.Open = +d.Open;
+                    d.Close = d.Close;
+                });
+                var parseDate = d3.timeFormat("%Y").parse,
+                    bisectDate = d3.bisector(function(d) {
+                        return d.Date;
+                    }).left,
+                    formatValue = d3.format(","),
+                    dateFormatter = d3.timeFormat("%Y");
 
                 const journeyX = d3.scaleTime().range([journeyMargin.left, width - journeyMargin.right])
                     .domain([new Date('01/01/1981'), new Date('1/1/2020')])
@@ -538,6 +551,48 @@
                     .style("text-anchor", "middle")
                     .text("Clients")
                     .attr("class", "y axis label");
+
+                /*
+                Tooltip
+                */
+                var focusTT = svgJourneyChart.append("g")
+                    .attr("class", "focus")
+                    .style("display", "none");
+                focusTT.append("circle")
+                    .attr("r", 5);
+                focusTT.append("rect")
+                    .attr("class", "tooltip")
+                    .attr("width", 120)
+                    .attr("height", 50)
+                    .attr("x", 10)
+                    .attr("y", -22)
+                    .attr("rx", 4)
+                    .attr("ry", 4);
+                focusTT.append("text")
+                    .attr("class", "tooltip-date")
+                    .attr("x", 18)
+                    .attr("y", -2);
+                focusTT.append("text")
+                    .attr("x", 18)
+                    .attr("y", 18)
+                    .text("Clients:");
+
+                focusTT.append("text")
+                    .attr("class", "tooltip-val")
+                    .attr("x", 70)
+                    .attr("y", 18);
+
+                svgJourneyChart.append("rect")
+                    .attr("class", "overlay")
+                    .attr("width", width)
+                    .attr("height", height)
+                    .on("mouseover", function() {
+                        focusTT.style("display", null);
+                    })
+                    .on("mouseout", function() {
+                        focusTT.style("display", "none");
+                    })
+                    .on("mousemove", mousemoveTT);
 
                 var journeyColorFn = d3.scaleOrdinal().domain(continents).range([0, 250]);
                 const yAxis = d3.axisLeft(journeyY).ticks(5).tickFormat(d3.format(".2s"))
@@ -673,8 +728,23 @@
                     .append("g")
                     .call(makeAnnotations);
 
+                function mousemoveTT() {
+                    try {
+                        var x0 = journeyX.invert(d3.mouse(this)[0]);
+                        var i = bisectDate(csv, x0, 1);
+                        var d0 = csv[i - 1];
+                        var d = x0 - d0.Date > csv[i].Date - x0 ? csv[i] : d0;
+                        focusTT.attr("transform", "translate(" + journeyX(d.Date) + "," + journeyY(d.Close) + ")");
+                        focusTT.select(".tooltip-date").text(dateFormatter(d.Date));
+                        focusTT.select(".tooltip-val").text(formatValue(d.Close));
+                    } catch (err) {
+                        console.log(err);
+                    }
+                }
+
             });
         };
+
 
         const dividedLine = (parameters, points, searchIterations) => {
             let currentParameters = parameters(points[0], 0)
@@ -826,14 +896,6 @@
         // Import the CSV data
         d3.csv("assets/data/account_count_by_indstry.csv", function(error, data) {
             if (error) throw error;
-
-            // Format the data
-            data.forEach(function(d) {
-                d.Year = parseYear(d.Year);
-                d.Clients = +d.Clients;
-                d.industry = d.industry;
-                d.Status = d.Status;
-            });
 
             var nest = d3.nest()
                 .key(function(d) {

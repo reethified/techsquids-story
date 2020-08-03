@@ -976,3 +976,26 @@ path {
 .border-25 {
     border-color: rgba(32, 102, 129, 0.25);
 }
+
+.overlay {
+    fill: none;
+    pointer-events: all;
+}
+
+.focus circle {
+    fill: rgb(30, 172, 125);
+}
+
+.focus text {
+    font-size: 12px;
+}
+
+.tooltip {
+    fill: white;
+    stroke: rgb(94, 119, 114);
+}
+
+.tooltip-date,
+.tooltip-val {
+    font-weight: inherit;
+}
