@@ -142,7 +142,8 @@
                                     Africa</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Since 2015 in
                                     Oceania</span></li>
-                            <li><span class="badge badge-primary badge-pill font-weight-normal">Observed less number of clients registration in 2018</span></li>
+                            <li><span class="badge badge-primary badge-pill font-weight-normal">Observed less number of
+                                    clients registration in 2018</span></li>
                         </ul>
 
                     </td>
@@ -167,12 +168,14 @@
                         <ul class="timeline">
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Hotel industry is at the
                                     bottom of client base and Retail is on the top</span></li>
-                            <li><span class="badge badge-primary badge-pill font-weight-normal">Healthcare is the 2nd largest industry after Retail.</span></li>
+                            <li><span class="badge badge-primary badge-pill font-weight-normal">Healthcare is the 2nd
+                                    largest industry after Retail</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Active and cancelled
                                     clients count are fluctuating throghout the years.</span></li>
                             <li><span class="badge badge-primary badge-pill font-weight-normal">Hotel industry clients
                                     had compartively slower growth in 1998, 2007 and 2016</span></li>
-                            <li><span class="badge badge-primary badge-pill font-weight-normal">Retail is the most promisting industry in client base.</span></li>
+                            <li><span class="badge badge-primary badge-pill font-weight-normal">Retail is the most
+                                    promisting industry in client base.</span></li>
                         </ul>
 
                     </td>
@@ -542,7 +545,7 @@
                     .text("Clients")
                     .attr("class", "y axis label");
 
-                var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
+                var journeyColorFn = d3.scaleOrdinal().domain(continents).range([0, 250]);
                 const yAxis = d3.axisLeft(journeyY).ticks(5).tickFormat(d3.format(".2s"))
                 const xAxis = d3.axisBottom(journeyX)
                 svgJourneyChart.append("g")
@@ -554,12 +557,11 @@
                     .attr("transform", "translate(0," + (height - journeyMargin.bottom) + ")")
                     .call(xAxis);
 
-
-                var journeyColorFn = d3.scaleOrdinal().domain(["Africa", "Europe", "Oceania", "Asia", "Americas"]).range([0, 250]);
                 /* Code below relevant for annotations */
+                //"Africa", "Europe", "Oceania", "Asia", "Americas"
                 const annotations = [{
                         note: {
-                            label: "Europe Launch"
+                            label: continents[1] + " Launch"
                         },
                         className: "europe",
                         subject: {
@@ -574,7 +576,7 @@
 
                     }, {
                         note: {
-                            label: "Asia Launch"
+                            label: continents[3] + " Launch"
                         },
                         className: "asia",
                         subject: {
@@ -587,7 +589,7 @@
                         }
                     }, {
                         note: {
-                            label: "Africa Launch"
+                            label: continents[0] + " Launch"
                         },
                         className: "africa",
                         subject: {
@@ -600,7 +602,7 @@
                         }
                     }, {
                         note: {
-                            label: "Oceania Launch"
+                            label: continents[2] + " Launch"
                         },
                         className: "oceania",
                         subject: {
@@ -755,7 +757,7 @@
         }
     </script>
 
-    <!-- Slide 3 Section 4: Account Status
+    <!-- Slide 3: Account Status
      -->
     <script>
         // Set the accountStatusMargins
@@ -964,7 +966,8 @@
                 asY.domain([0, industryMax[industry]]);
 
                 asSvg.selectAll("#yaxis").data(selectindustry)
-                    .transition().duration(1500) // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
+                    .transition()
+                    .duration(1500) // https://github.com/mbostock/d3/wiki/Transitions#wiki-d3_ease
                     .call(yScale);
 
 
@@ -979,9 +982,6 @@
                     .attr("d", function(d) {
                         return asvalueLine(d.values)
                     })
-
-
-
             }
 
             industryMenu.on('change', function() {
